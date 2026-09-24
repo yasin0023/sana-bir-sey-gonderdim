@@ -7,154 +7,153 @@
 <title>Sana Bir Şey Gönderdim 🎁</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+*{box-sizing:border-box}
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
     background:
-        radial-gradient(circle at top, #6d214f 0%, #24102f 45%, #100914 100%);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    radial-gradient(circle at top,#762557 0%,#29102f 45%,#100914 100%);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
 
-.container {
-    width: 100%;
-    max-width: 430px;
+.container{
+    width:100%;
+    max-width:430px;
 }
 
-.card {
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.15);
-    backdrop-filter: blur(15px);
-    border-radius: 28px;
-    padding: 30px 24px;
-    text-align: center;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+.card{
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(15px);
+    border-radius:28px;
+    padding:30px 24px;
+    text-align:center;
+    box-shadow:0 25px 70px rgba(0,0,0,.45);
 }
 
-.gift {
-    font-size: 70px;
-    margin-bottom: 10px;
-    animation: float 2s ease-in-out infinite;
+.gift{
+    font-size:68px;
+    margin-bottom:10px;
 }
 
-@keyframes float {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+h1{
+    font-size:30px;
+    margin:10px 0;
 }
 
-h1 {
-    font-size: 30px;
-    margin: 10px 0;
+h2{
+    font-size:28px;
 }
 
-h2 {
-    font-size: 28px;
+p{
+    line-height:1.6;
 }
 
-p {
-    line-height: 1.6;
+.muted{
+    opacity:.75;
 }
 
-.muted {
-    opacity: 0.75;
+input{
+    width:100%;
+    padding:16px;
+    margin-top:15px;
+    border:0;
+    border-radius:14px;
+    font-size:17px;
+    outline:none;
 }
 
-input {
-    width: 100%;
-    padding: 16px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 14px;
-    font-size: 17px;
-    outline: none;
+button{
+    width:100%;
+    padding:16px;
+    margin-top:12px;
+    border:0;
+    border-radius:14px;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    background:white;
+    color:#32152f;
 }
 
-button {
-    width: 100%;
-    padding: 16px;
-    margin-top: 12px;
-    border: none;
-    border-radius: 14px;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    background: white;
-    color: #32152f;
+button:active{
+    transform:scale(.98);
 }
 
-button:active {
-    transform: scale(0.98);
+.whatsapp{
+    background:#25D366;
+    color:white;
 }
 
-.whatsapp {
-    background: #25D366;
-    color: white;
+.secondary{
+    background:rgba(255,255,255,.15);
+    color:white;
 }
 
-.secondary {
-    background: rgba(255,255,255,0.15);
-    color: white;
+.link-box{
+    margin-top:15px;
+    padding:14px;
+    border-radius:12px;
+    background:rgba(0,0,0,.25);
+    word-break:break-all;
+    font-size:13px;
 }
 
-.link-box {
-    margin-top: 15px;
-    padding: 14px;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.25);
-    word-break: break-all;
-    font-size: 13px;
+.hidden{
+    display:none!important;
 }
 
-.hidden {
-    display: none !important;
+.countdown{
+    font-size:85px;
+    font-weight:bold;
+    margin:25px 0;
 }
 
-.countdown {
-    font-size: 80px;
-    font-weight: bold;
-    margin: 25px 0;
-    animation: pulse 1s infinite;
+.reveal{
+    animation:reveal .7s ease;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.12); }
-    100% { transform: scale(1); }
-}
-
-.reveal {
-    animation: reveal 0.8s ease;
-}
-
-@keyframes reveal {
-    from {
-        opacity: 0;
-        transform: scale(0.7);
+@keyframes reveal{
+    from{
+        opacity:0;
+        transform:scale(.7);
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+    to{
+        opacity:1;
+        transform:scale(1);
     }
 }
 
-.small {
-    font-size: 12px;
-    opacity: 0.5;
-    margin-top: 20px;
+.small{
+    font-size:12px;
+    opacity:.5;
+    margin-top:20px;
 }
 
-.success {
-    color: #8affc1;
-    font-size: 14px;
-    margin-top: 10px;
+.success{
+    color:#8affc1;
+    font-size:14px;
+    margin-top:10px;
+}
+
+.shake{
+    font-size:64px;
+    margin-bottom:10px;
+}
+
+.badge{
+    display:inline-block;
+    padding:7px 12px;
+    border-radius:20px;
+    background:rgba(255,255,255,.12);
+    font-size:13px;
+    margin-bottom:10px;
 }
 </style>
 </head>
@@ -163,152 +162,150 @@ button:active {
 
 <div class="container">
 
-    <!-- GÖNDEREN EKRANI -->
-    <div class="card" id="senderScreen">
+<!-- GÖNDEREN -->
+<div class="card" id="senderScreen">
 
-        <div class="gift">🎁</div>
+    <div class="gift">🎁</div>
 
-        <h1>Sana Bir Şey Gönderdim</h1>
+    <h1>Sana Bir Şey Gönderdim</h1>
 
-        <p class="muted">
-            Bir arkadaşına küçük bir sürpriz gönder. 😏
-        </p>
+    <p class="muted">
+        Bir arkadaşına küçük bir sürpriz gönder. 😏
+    </p>
 
-        <input
-            id="friendName"
-            type="text"
-            maxlength="40"
-            placeholder="Arkadaşının adı"
-        >
+    <input
+        id="friendName"
+        type="text"
+        maxlength="40"
+        placeholder="Arkadaşının adı"
+    >
 
-        <button onclick="createSurprise()">
-            🎁 Sürprizi Hazırla
-        </button>
+    <button onclick="createSurprise()">
+        🎁 Sürprizi Hazırla
+    </button>
 
-        <p class="small">
-            Demo • Henüz ödeme yok
-        </p>
+    <p class="small">
+        Demo • Henüz ödeme yok
+    </p>
 
+</div>
+
+
+<!-- PAYLAŞ -->
+<div class="card hidden" id="shareScreen">
+
+    <div class="gift">🔐</div>
+
+    <h2>Hazır! 😏</h2>
+
+    <p>
+        <strong id="friendNameResult"></strong> için
+        sürpriz hazırlandı.
+    </p>
+
+    <div class="link-box" id="generatedLink"></div>
+
+    <button onclick="copyLink()">
+        🔗 Linki Kopyala
+    </button>
+
+    <button class="whatsapp" onclick="sendWhatsApp()">
+        💬 WhatsApp'tan Gönder
+    </button>
+
+    <div class="success" id="copyMessage"></div>
+
+    <button class="secondary" onclick="location.href=location.pathname">
+        🔄 Yeni Sürpriz
+    </button>
+
+</div>
+
+
+<!-- ALICI -->
+<div class="card hidden" id="receiverScreen">
+
+    <div class="gift">🎁</div>
+
+    <span class="badge">
+        Sana özel bir şey var
+    </span>
+
+    <h2 id="receiverTitle">
+        Bakalım neymiş... 👀
+    </h2>
+
+    <p class="muted">
+        Açmadan önce hazır olduğundan emin ol.
+    </p>
+
+    <div class="countdown" id="countdown">
+        3
     </div>
 
-
-    <!-- LİNK EKRANI -->
-    <div class="card hidden" id="shareScreen">
-
-        <div class="gift">🔐</div>
-
-        <h2>Hazır! 😏</h2>
-
-        <p>
-            <strong id="friendNameResult"></strong> için
-            sürpriz hazırlandı.
-        </p>
-
-        <div class="link-box" id="generatedLink"></div>
-
-        <button onclick="copyLink()">
-            🔗 Linki Kopyala
-        </button>
-
-        <button class="whatsapp" onclick="sendWhatsApp()">
-            💬 WhatsApp'tan Gönder
-        </button>
-
-        <div class="success" id="copyMessage"></div>
-
-        <button class="secondary" onclick="location.href = location.pathname">
-            🔄 Yeni Sürpriz
-        </button>
-
-    </div>
+</div>
 
 
-    <!-- ALICI EKRANI -->
-    <div class="card hidden" id="receiverScreen">
+<!-- SONUÇ -->
+<div class="card hidden" id="resultScreen">
 
-        <div class="gift">🎁</div>
+    <div class="reveal">
 
-        <h2>Sana özel bir şey var...</h2>
-
-        <p class="muted">
-            Hazır mısın? 👀
-        </p>
-
-        <div class="countdown" id="countdown">
-            3
+        <div class="shake" id="resultEmoji">
+            😂
         </div>
 
-    </div>
+        <span class="badge" id="resultBadge">
+            Sürpriz!
+        </span>
 
+        <h2 id="helloText"></h2>
 
-    <!-- SONUÇ -->
-    <div class="card hidden" id="resultScreen">
+        <div id="jokeContent"></div>
 
-        <div class="gift">😂</div>
-
-        <div class="reveal">
-
-            <h2 id="helloText"></h2>
-
-            <p style="font-size:25px;font-weight:bold;">
-                Bugün hiçbir şey kazanmadın!
-            </p>
-
-            <p>
-                Arkadaşın sana
-                <strong>1 TL'lik</strong>
-                bir şaka gönderdi. 😂
-            </p>
-
-            <p class="muted">
-                Ama kabul et...
-                Merak edip açtın. 👀
-            </p>
-
-            <button onclick="location.href = location.pathname">
-                😎 Ben de Birine Göndereyim
-            </button>
-
-        </div>
+        <button onclick="location.href=location.pathname">
+            😎 Ben de Birine Göndereyim
+        </button>
 
     </div>
+
+</div>
 
 </div>
 
 
 <script>
 
-/* URL'den arkadaşın adını al */
+/* URL'den ismi al */
 const params = new URLSearchParams(window.location.search);
 const receiverName = params.get("to");
 
 
-/* Sayfa açıldığında ?to= varsa alıcı ekranını başlat */
-if (receiverName) {
+/* Sayfa ?to= ile açıldıysa alıcı ekranı */
+if(receiverName){
 
-    const decodedName = decodeURIComponent(receiverName);
+    const name = receiverName;
 
     document.getElementById("senderScreen")
-        .classList.add("hidden");
-
-    document.getElementById("shareScreen")
         .classList.add("hidden");
 
     document.getElementById("receiverScreen")
         .classList.remove("hidden");
 
-    startCountdown(decodedName);
+    startCountdown(name);
 }
 
 
 /* Sürpriz oluştur */
-function createSurprise() {
+function createSurprise(){
 
-    const input = document.getElementById("friendName");
+    const input =
+        document.getElementById("friendName");
 
-    const name = input.value.trim();
+    const name =
+        input.value.trim();
 
-    if (!name) {
+    if(!name){
 
         alert("Önce arkadaşının adını yaz 😄");
 
@@ -317,25 +314,17 @@ function createSurprise() {
         return;
     }
 
-
-    /*
-    Kişiye özel URL oluşturuyoruz.
-    encodeURIComponent Türkçe karakterleri
-    güvenli şekilde URL'ye çevirir.
-    */
-
     const url =
         window.location.origin +
         window.location.pathname +
         "?to=" +
         encodeURIComponent(name);
 
-
     document.getElementById("friendNameResult")
-        .textContent = name;
+        .textContent=name;
 
     document.getElementById("generatedLink")
-        .textContent = url;
+        .textContent=url;
 
     document.getElementById("senderScreen")
         .classList.add("hidden");
@@ -345,31 +334,34 @@ function createSurprise() {
 }
 
 
-/* Link kopyalama */
-function copyLink() {
+/* Link kopyala */
+function copyLink(){
 
     const link =
         document.getElementById("generatedLink")
         .textContent;
 
     navigator.clipboard.writeText(link)
-        .then(function() {
+        .then(function(){
 
             document.getElementById("copyMessage")
                 .textContent =
-                "✅ Link kopyalandı! Arkadaşına gönderebilirsin.";
+                "✅ Link kopyalandı!";
 
         })
-        .catch(function() {
+        .catch(function(){
 
-            alert("Linki seçip kopyalayabilirsin:\n\n" + link);
+            alert(
+                "Linki kopyalayamadı. Link:\n\n" +
+                link
+            );
 
         });
 }
 
 
 /* WhatsApp */
-function sendWhatsApp() {
+function sendWhatsApp(){
 
     const link =
         document.getElementById("generatedLink")
@@ -380,52 +372,154 @@ function sendWhatsApp() {
         .textContent;
 
     const message =
-        name +
-        ", sana bir şey gönderdim. Aç bakalım 👀🎁\n\n" +
+        "Sana bir şey gönderdim. Aç bakalım 👀🎁\n\n" +
         link;
 
     const whatsappURL =
         "https://wa.me/?text=" +
         encodeURIComponent(message);
 
-    window.open(whatsappURL, "_blank");
+    window.open(
+        whatsappURL,
+        "_blank"
+    );
 }
 
 
-/* Alıcı geri sayımı */
-function startCountdown(name) {
+/* 3-2-1 */
+function startCountdown(name){
 
-    let count = 3;
+    let count=3;
 
     const countdown =
         document.getElementById("countdown");
 
-    countdown.textContent = count;
+    countdown.textContent=count;
+
+    const timer =
+        setInterval(function(){
+
+            count--;
+
+            countdown.textContent=count;
+
+            if(count<=0){
+
+                clearInterval(timer);
+
+                document.getElementById("receiverScreen")
+                    .classList.add("hidden");
+
+                document.getElementById("resultScreen")
+                    .classList.remove("hidden");
+
+                showRandomJoke(name);
+            }
+
+        },1000);
+}
 
 
-    const timer = setInterval(function() {
+/* Rastgele şaka */
+function showRandomJoke(name){
 
-        count--;
+    const jokes=[
 
-        countdown.textContent = count;
+        {
+            emoji:"🏆",
+            badge:"BÜYÜK ÖDÜL",
+            title:"TEBRİKLER! 🎉",
+            html:`
+                <p style="font-size:24px;font-weight:bold;">
+                    Büyük ödülü kazandın!
+                </p>
 
+                <p>
+                    🏆 Ödülün:
+                    <strong>Hiçbir şey.</strong>
+                </p>
 
-        if (count <= 0) {
+                <p class="muted">
+                    Ama arkadaşın sana 1 TL harcadı. 😂
+                </p>
+            `
+        },
 
-            clearInterval(timer);
+        {
+            emoji:"🚨",
+            badge:"ACİL DURUM",
+            title:"Hey "+escapeHTML(name)+"! 🚨",
+            html:`
+                <p style="font-size:24px;font-weight:bold;">
+                    Arkadaşın senin hakkında
+                    önemli bir karar verdi...
+                </p>
 
-            document.getElementById("receiverScreen")
-                .classList.add("hidden");
+                <p>
+                    3... 2... 1...
+                </p>
 
-            document.getElementById("resultScreen")
-                .classList.remove("hidden");
+                <p>
+                    😂 Sana 1 TL'lik bir şaka gönderdi.
+                </p>
+            `
+        },
 
-            document.getElementById("helloText")
-                .textContent =
-                "Hey " + name + "! 😂";
+        {
+            emoji:"💸",
+            badge:"PARA İADESİ",
+            title:"Kötü haber "+escapeHTML(name)+"... 😂",
+            html:`
+                <p style="font-size:24px;font-weight:bold;">
+                    Arkadaşın sana 1 TL harcadı.
+                </p>
+
+                <p>
+                    İyi haber:
+                    <strong>Paran güvende.</strong>
+                </p>
+
+                <p>
+                    Kötü haber:
+                    <strong>Para zaten senin değildi. 😂</strong>
+                </p>
+            `
         }
 
-    }, 1000);
+    ];
+
+
+    const joke =
+        jokes[
+            Math.floor(
+                Math.random()*jokes.length
+            )
+        ];
+
+
+    document.getElementById("resultEmoji")
+        .textContent=joke.emoji;
+
+    document.getElementById("resultBadge")
+        .textContent=joke.badge;
+
+    document.getElementById("helloText")
+        .innerHTML=joke.title;
+
+    document.getElementById("jokeContent")
+        .innerHTML=joke.html;
+}
+
+
+/* Güvenli isim gösterimi */
+function escapeHTML(text){
+
+    return text
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
 </script>
