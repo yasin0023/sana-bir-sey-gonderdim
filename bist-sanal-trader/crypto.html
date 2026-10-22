@@ -43,7 +43,15 @@ async function getTicker(symbol){
   const d=await r.json(),p=Number(d?.[id]?.usd);
   if(Number.isFinite(p)&&p>0)return {price:p,source:'CoinGecko · USD'};
   throw Error('CoinGecko geçerli fiyat döndürmedi');
- }catch(e){throw Error('Yahoo Finance: '+(lastError?.message||'erişilemiyor')+'; CoinGecko: '+e.message);}
+ }catch(e){lastError=e;}
+ try{
+  const pair={'BTCUSDT':'BTCUSDT','ETHUSDT':'ETHUSDT','SOLUSDT':'SOLUSDT','DOGEUSDT':'DOGEUSDT'}[symbol];
+  const r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol='+pair,{cache:'no-store'});
+  if(!r.ok)throw Error('Binance HTTP '+r.status);
+  const d=await r.json(),p=Number(d?.price);
+  if(Number.isFinite(p)&&p>0)return {price:p,source:'Binance · USDT'};
+  throw Error('Binance geçerli fiyat döndürmedi');
+ }catch(e){throw Error('Yahoo Finance: '+(lastError?.message||'erişilemiyor')+'; CoinGecko: '+(e.message||'erişilemiyor')+'; Binance: '+e.message);}
 }
 function getCachedPrice(symbol){try{const x=JSON.parse(localStorage.getItem('crypto_last_price_'+symbol)||'null');return x&&Number.isFinite(Number(x.price))?x:null;}catch(_){return null;}}
 function rememberPrice(symbol,result){try{localStorage.setItem('crypto_last_price_'+symbol,JSON.stringify({price:result.price,source:result.source,time:new Date().toISOString()}));}catch(_){}}
