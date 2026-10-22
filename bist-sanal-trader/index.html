@@ -7,12 +7,13 @@
 </style></head><body><main>
 <header class="top"><div class="brand"><div class="logo">📈</div><div><h1>BIST Sanal Trader</h1><p class="sub">Piyasa izleme · Sanal portföy · Gerçek emir yok</p></div></div><div class="actions"><button id="refreshBtn">↻ Veriyi yenile</button><button class="secondary" id="resetBtn">Sanal hesabı sıfırla</button></div></header>
 <div id="status" class="status">Açık finansal veri kaynağına bağlanılıyor…</div>
-<div class="card section"><h2>Otomatik sanal test</h2><p class="muted">Ekran 2 saniyede bir yenilenir. Fiyat verisi kaynağı gereksiz isteklerle zorlanmaması için en fazla 15 dakikada bir sorgulanır; kaynak anlık fiyat sağlamaz.</p><div class="formgrid"><div class="field"><label>Otomatik sanal alım-satım</label><select id="autoMode"><option value="off">Kapalı</option><option value="on">Açık — sanal işlemler</option></select></div><div class="field"><label>İşlem başına azami bakiye</label><select id="riskPct"><option value="5">Bakiye %5</option><option value="10">Bakiye %10</option><option value="20">Bakiye %20</option></select></div><div class="field"><label>Otomatik işlem kuralı</label><div class="status">Yeni fiyat önceki kayıttan yüksekse ve pozisyon yoksa AL; düşükse eldeki pozisyonu SAT. Deneysel basit kural.</div></div><div class="field"><label>Durum</label><div id="autoStatus" class="status">Otomatik işlem kapalı.</div></div></div><p class="foot">Yalnızca sanal işlem yapar. Tarayıcı kapalıyken bu sayfa çalışmaz; arka plan takibi için ayrıca sunucu görevi gerekir.</p></div>
+<div class="card section"><h2>Tarayıcı içi otomatik test · ayrı sanal bakiye</h2><p class="muted">Ekran 2 saniyede bir yenilenir. Fiyat verisi kaynağı gereksiz isteklerle zorlanmaması için en fazla 15 dakikada bir sorgulanır; kaynak anlık fiyat sağlamaz.</p><div class="formgrid"><div class="field"><label>Otomatik sanal alım-satım</label><select id="autoMode"><option value="off">Kapalı</option><option value="on">Açık — sanal işlemler</option></select></div><div class="field"><label>İşlem başına azami bakiye</label><select id="riskPct"><option value="5">Bakiye %5</option><option value="10">Bakiye %10</option><option value="20">Bakiye %20</option></select></div><div class="field"><label>Otomatik işlem kuralı</label><div class="status">Yeni fiyat önceki kayıttan yüksekse ve pozisyon yoksa AL; düşükse eldeki pozisyonu SAT. Deneysel basit kural.</div></div><div class="field"><label>Durum</label><div id="autoStatus" class="status">Otomatik işlem kapalı.</div></div></div><p class="foot">Yalnızca sanal işlem yapar. Tarayıcı kapalıyken bu sayfa çalışmaz; arka plan takibi için ayrıca sunucu görevi gerekir.</p></div>
 <section class="grid">
 <div class="card"><div class="label">Sanal portföy</div><div class="value" id="equity">100.000,00 TL</div><div class="hint" id="equityChange">Başlangıç: 100.000 TL</div></div>
 <div class="card"><div class="label">Kullanılabilir nakit</div><div class="value" id="cash">100.000,00 TL</div><div class="hint">Gerçek para değildir</div></div>
 <div class="card"><div class="label">Açık pozisyonlar</div><div class="value" id="posCount">0</div><div class="hint" id="posValue">Piyasa değeri: 0 TL</div></div>
 <div class="card"><div class="label">Toplam sanal K/Z</div><div class="value" id="pnl">0,00 TL</div><div class="hint" id="pnlPct">%0,00 başlangıçtan</div></div></section>
+<section class="card section" id="backgroundPanel"><h2>Arka plan motoru · ortak rapor</h2><p class="muted">Bu portföy GitHub Actions tarafından sunucu tarafında yönetilir; telefon tarayıcısından bağımsızdır. Rapor her 60 saniyede bir okunur.</p><div class="grid"><div class="card"><div class="label">Arka plan toplam varlık</div><div class="value" id="bgEquity">100.000,00 TL</div><div class="hint" id="bgReturn">%0,00 getiri</div></div><div class="card"><div class="label">Arka plan nakit</div><div class="value" id="bgCash">100.000,00 TL</div><div class="hint">Sanal bakiye</div></div><div class="card"><div class="label">Pozisyon sayısı</div><div class="value" id="bgPositions">0</div><div class="hint" id="bgMarketValue">Piyasa değeri: 0 TL</div></div><div class="card"><div class="label">Son arka plan çalışması</div><div class="value" id="bgUpdated" style="font-size:15px">Henüz rapor yok</div><div class="hint" id="bgMode">Sanal mod</div></div></div><div id="bgStatus" class="status">Arka plan raporu yükleniyor…</div><h3>Arka plan açık pozisyonları</h3><div id="bgPositionList" class="position-list"><div class="empty">Rapor bekleniyor…</div></div><h3>Arka plan son işlemleri</h3><div id="bgTrades" class="position-list"><div class="empty">Henüz işlem kaydı yok.</div></div><a class="btn" href="https://github.com/yasin0023/sana-bir-sey-gonderdim/actions/workflows/bist-paper-trader-background.yml" target="_blank" rel="noopener">Arka plan çalıştırmalarını gör</a></section>
 <div class="layout"><section class="card"><h2>Hisse tarayıcı</h2><div class="toolbar"><input id="search" placeholder="Hisse kodu, şirket veya sektör ara…"><select id="sort"><option value="marketcap">Piyasa değerine göre</option><option value="pe">F/K düşükten yükseğe</option><option value="pb">PD/DD düşükten yükseğe</option><option value="roe">Özkaynak kârlılığı yüksekten</option><option value="dividend">Temettü verimi yüksekten</option></select></div>
 <div class="tablewrap"><table><thead><tr><th>Kod / Şirket</th><th>Fiyat</th><th>F/K</th><th>PD/DD</th><th>ROE</th><th>Temettü</th><th></th></tr></thead><tbody id="companies"><tr><td colspan="7" class="empty">Veri bekleniyor…</td></tr></tbody></table></div><p class="foot">Değerleme ölçüleri karşılaştırma içindir; tek başına “al” sinyali değildir. Bilinmeyen değerler boş bırakılır.</p></section>
 <aside class="card"><h2>Sanal işlem paneli</h2><p class="muted" style="margin-top:-5px;font-size:13px">Son raporlanan fiyatla sanal al/sat. Maliyet varsayımı işlem tarafı başına %0,10.</p><div class="formgrid">
@@ -22,7 +23,7 @@
 <div class="foot">BIST Sanal Trader · v0.3 · Yalnızca eğitim ve sanal test. Kâr garantisi yoktur. Gerçek emir göndermez. Sanal bakiye bu tarayıcıda saklanır; tarayıcı verilerini temizlemek kayıtları silebilir.</div>
 </main>
 <script>
-const API="https://bilancoveri.com/api/v1/sirketler.json",META_API="https://bilancoveri.com/api/v1/meta.json",START=100000,FEE=.001,STORE="bist-sanal-trader-v03";
+const API="https://bilancoveri.com/api/v1/sirketler.json",META_API="https://bilancoveri.com/api/v1/meta.json",REPORT_API="https://raw.githubusercontent.com/yasin0023/sana-bir-sey-gonderdim/main/bist-sanal-trader/paper_report.json",START=100000,FEE=.001,STORE="bist-sanal-trader-v03";
 let companies=[],loadedAt=null,lastAutoPrices=JSON.parse(localStorage.getItem("bist-auto-last-prices")||"{}"),lastAutoTradeAt=JSON.parse(localStorage.getItem("bist-auto-last-trade")||"{}");const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}),money=n=>fmt(n)+" TL";
 const num=v=>{if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null;};
@@ -39,6 +40,23 @@ document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{$("tradeSymbo
 const old=$("tradeSymbol").value;$("tradeSymbol").innerHTML=companies.filter(c=>c.price!==null).map(c=>'<option value="'+esc(c.ticker)+'">'+esc(c.ticker)+' · '+esc(c.name)+'</option>').join("");if(companies.some(c=>c.ticker===old))$("tradeSymbol").value=old;renderTradePrice();}
 function priceFor(t){const c=companies.find(c=>c.ticker===t);return c?c.price:null;}
 function renderTradePrice(){const t=$("tradeSymbol").value,p=priceFor(t);$("tradePrice").textContent=p===null?"Bu hisse için fiyat alanı bulunamadı.":t+" son raporlanan fiyatı: "+money(p)+" · maliyet hariç";}
+async function loadBackgroundReport(){
+ try{
+  const r=await fetch(REPORT_API+"?t="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  const d=await r.json();
+  $("bgEquity").textContent=money(Number(d.equity||100000));
+  $("bgCash").textContent=money(Number(d.cash||0));
+  $("bgPositions").textContent=String(Object.keys(d.open_positions||{}).length);
+  $("bgMarketValue").textContent="Piyasa değeri: "+money(Number(d.market_value||0));
+  $("bgReturn").textContent=(Number(d.return_pct||0)>=0?"+":"")+fmt(Number(d.return_pct||0))+"% başlangıçtan";
+  $("bgUpdated").textContent=d.updated_at?new Date(d.updated_at).toLocaleString("tr-TR"):"Henüz çalışmadı";
+  $("bgMode").textContent="Yalnızca sanal işlem";
+  $("bgPositionList").innerHTML=Object.entries(d.open_positions||{}).map(([s,p])=>'<div class="position"><div><b>'+esc(s)+'</b><div class="muted">'+Number(p.qty||0)+' adet · ort. '+money(Number(p.avg||0))+'</div></div><div><b>'+money(Number(p.qty||0)*Number((d.symbols||[]).find(x=>x.symbol===s)?.price||p.avg||0))+'</b></div></div>').join("")||'<div class="empty">Arka plan portföyünde açık pozisyon yok.</div>';
+  $("bgTrades").innerHTML=(d.recent_trades||[]).slice(-10).reverse().map(t=>'<div class="position"><div><b>'+esc(t.side||"İŞLEM")+' · '+esc(t.symbol||"")+'</b><div class="muted">'+esc(t.time||t.bar_time||"")+'</div></div><div style="text-align:right"><b>'+Number(t.qty||0)+' adet</b><div>'+money(Number(t.price||0))+'</div></div></div>').join("")||'<div class="empty">Henüz arka plan işlemi yok.</div>';
+  const errs=(d.errors||[]);$("bgStatus").textContent="Rapor güncel. Son çalışma: "+(d.updated_at?new Date(d.updated_at).toLocaleString("tr-TR"):"başlangıç raporu")+". "+(errs.length?"Not: "+errs.slice(0,2).join(" · "):"Veri hatası kaydı yok.")+" Strateji: SMA5/SMA20 kesişimi.";
+ }catch(e){$("bgStatus").textContent="Arka plan raporu okunamadı: "+e.message+" · GitHub Actions görevini kontrol et.";$("bgStatus").className="status error";}
+}
 function autoTradeOnFreshData(){
  if($("autoMode").value!=="on"){ $("autoStatus").textContent="Otomatik işlem kapalı."; return; }
  const now=Date.now(),acted=[];
@@ -77,6 +95,8 @@ $("autoMode").onchange=()=>{localStorage.setItem("bist-auto-mode",$("autoMode").
 $("riskPct").value=localStorage.getItem("bist-auto-risk")||"10";
 $("riskPct").onchange=()=>localStorage.setItem("bist-auto-risk",$("riskPct").value);
 setInterval(()=>{renderPortfolio();if(loadedAt&&Date.now()-loadedAt>=15*60*1000)loadData(true);},2000);
+setInterval(loadBackgroundReport,60000);
+loadBackgroundReport();
 $("autoStatus").textContent=$("autoMode").value==="on"?"Otomatik sanal işlem açık; yeni fiyat değişimi bekleniyor.":"Otomatik işlem kapalı.";
 loadData(false);
 </script></body></html>
