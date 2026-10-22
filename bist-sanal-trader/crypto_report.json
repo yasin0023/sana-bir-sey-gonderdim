@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-22T20:48:54.700831+00:00",
+  "last_run": "2026-10-22T20:58:50.471465+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 15-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -7,20 +7,20 @@
     "ETHUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81189.921875,
-    "ETHUSDT": 2380.760009765625
+    "BTCUSDT": 81189.90625,
+    "ETHUSDT": 2380.7900390625
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81189.921875,
+      "price": 81189.90625,
       "bar_time": 1792701000000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2380.760009765625,
+      "price": 2380.7900390625,
       "bar_time": 1792701000000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
