@@ -25,7 +25,31 @@
 const fmt=n=>Number.isFinite(Number(n))?Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6}):'—';
 const usd=n=>Number.isFinite(Number(n))?'$'+fmt(n):'—';
 const $=id=>document.getElementById(id);
-async function prices(){try{const r=await fetch('https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%2C%22ETHUSDT%22%5D',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const a=await r.json();const m=Object.fromEntries(a.map(x=>[x.symbol,Number(x.price)]));$('btc').textContent=usd(m.BTCUSDT);$('eth').textContent=usd(m.ETHUSDT);$('priceTime').textContent=new Date().toLocaleString('tr-TR');$('btcmeta').textContent='BTC/USDT · Binance';$('ethmeta').textContent='ETH/USDT · Binance';$('status').textContent='Canlı fiyat bağlantısı başarılı. Bu fiyatlar sanal işlem motorunun son çalışma fiyatıyla aynı anda olmayabilir.';$('status').className='hint good'}catch(e){$('status').textContent='Fiyat alınamadı: '+e.message+' — daha sonra yeniden denenecek.';$('status').className='hint error'}}
+async function getTicker(symbol){
+ const hosts=['https://api.binance.com','https://api1.binance.com','https://data-api.binance.vision'];
+ let lastError;
+ for(const host of hosts){
+  try{
+   const r=await fetch(host+'/api/v3/ticker/price?symbol='+encodeURIComponent(symbol),{cache:'no-store'});
+   if(!r.ok)throw Error(host+' HTTP '+r.status);
+   const d=await r.json(),p=Number(d.price);
+   if(!Number.isFinite(p)||p<=0)throw Error('Geçersiz fiyat');
+   return p;
+  }catch(e){lastError=e;}
+ }
+ throw lastError||Error('Binance fiyatına ulaşılamadı');
+}
+async function prices(){
+ $('btcmeta').textContent='Binance bağlantısı deneniyor…';$('ethmeta').textContent='Binance bağlantısı deneniyor…';
+ const results=await Promise.allSettled([getTicker('BTCUSDT'),getTicker('ETHUSDT')]);
+ let ok=0;
+ if(results[0].status==='fulfilled'){$('btc').textContent=usd(results[0].value);$('btcmeta').textContent='BTC/USDT · Binance';ok++;}
+ else{$('btc').textContent='Fiyat alınamadı';$('btcmeta').textContent=String(results[0].reason?.message||'Bağlantı hatası');}
+ if(results[1].status==='fulfilled'){$('eth').textContent=usd(results[1].value);$('ethmeta').textContent='ETH/USDT · Binance';ok++;}
+ else{$('eth').textContent='Fiyat alınamadı';$('ethmeta').textContent=String(results[1].reason?.message||'Bağlantı hatası');}
+ if(ok){$('priceTime').textContent=new Date().toLocaleString('tr-TR');$('status').textContent=ok===2?'Canlı fiyat bağlantısı başarılı. Yedek Binance uç noktaları da denenebilir.':'Yalnızca bir kripto fiyatı alınabildi; diğer fiyat için tekrar denenecek.';$('status').className='hint '+(ok===2?'good':'error');}
+ else{$('status').textContent='Binance fiyatlarına bu tarayıcıdan erişilemedi. İnternet/CORS engeli olabilir; otomatik tekrar denenecek.';$('status').className='hint error';}
+}
 async function report(){try{const r=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Rapor henüz yayımlanmamış');const d=await r.json();$('engine').textContent=d.last_run?'Çalıştı':'İlk çalışma bekleniyor';$('updated').textContent='Son çalışma: '+(d.last_run?new Date(d.last_run).toLocaleString('tr-TR'):'henüz yok')+' · Hata: '+((d.errors||[]).length);$('cash').textContent=fmt(d.cash)+' USDT';$('mv').textContent=fmt(d.market_value)+' USDT';$('equity').textContent=fmt(d.equity)+' USDT';$('ret').textContent='Getiri: '+fmt(d.return_pct)+'%';$('ret').className='hint '+(Number(d.return_pct)>=0?'good':'error');const ps=Object.entries(d.open_positions||{});$('positions').innerHTML=ps.length?ps.map(([s,p])=>'<tr><td>'+s+'</td><td>'+fmt(p.qty)+'</td><td>'+fmt(p.avg)+'</td><td>'+fmt((d.prices||{})[s])+'</td><td>'+fmt(Number(p.qty)*Number((d.prices||{})[s]||p.avg))+'</td></tr>').join(''):'<tr><td colspan="5">Açık pozisyon yok.</td></tr>';const ts=(d.recent_trades||[]).slice().reverse();$('trades').innerHTML=ts.length?ts.map(t=>'<tr><td>'+new Date(t.time).toLocaleString('tr-TR')+'</td><td>'+t.symbol+'</td><td>'+t.side+'</td><td>'+fmt(t.qty)+'</td><td>'+fmt(t.price)+'</td><td>'+t.reason+'</td></tr>').join(''):'<tr><td colspan="6">Henüz sanal işlem yapılmadı. Sinyal oluşması bekleniyor.</td></tr>'}catch(e){$('engine').textContent='Rapor bekleniyor';$('updated').textContent=e.message;$('positions').innerHTML='<tr><td colspan="5">İlk başarılı arka plan çalışması sonrası görünür.</td></tr>'}}
 $('refresh').addEventListener('click',()=>{prices();report()});prices();report();setInterval(prices,30000);setInterval(report,60000);
 </script></body></html>
