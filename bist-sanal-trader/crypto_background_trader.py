@@ -6,7 +6,7 @@ import requests
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "crypto_portfolio.json"
 REPORT_PATH = ROOT / "crypto_report.json"
-SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD"}
+SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DOGEUSDT": "DOGE-USD"}
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
@@ -49,7 +49,7 @@ def get_yahoo_candles(ticker, now_ms):
     return candles, "Yahoo Finance chart (USD)"
 
 def get_kraken_candles(symbol):
-    pair = {"BTCUSDT": "XBTUSDT", "ETHUSDT": "ETHUSDT", "SOLUSDT": "SOLUSDT"}[symbol]
+    pair = {"BTCUSDT": "XBTUSDT", "ETHUSDT": "ETHUSDT", "SOLUSDT": "SOLUSDT", "DOGEUSDT": "DOGEUSDT"}[symbol]
     response = SESSION.get("https://api.kraken.com/0/public/OHLC", params={"pair": pair, "interval": 15}, timeout=20)
     response.raise_for_status()
     payload = response.json()
@@ -139,7 +139,7 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max three positions",
+        "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max four positions",
         "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
