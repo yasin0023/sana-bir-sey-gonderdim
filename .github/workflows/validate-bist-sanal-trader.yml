@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'bist-sanal-trader/**'
+      - '.github/workflows/validate-bist-sanal-trader.yml'
   workflow_dispatch:
 jobs:
   validate:
