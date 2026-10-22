@@ -30,18 +30,18 @@ def main():
             response = requests.get("https://api.binance.com/api/v3/klines", params={"symbol": symbol, "interval": "15m", "limit": 60}, timeout=20)
             response.raise_for_status()
             rows = response.json()
-            if len(rows) < 21:
+            if len(rows) < 22:
                 raise ValueError("Yetersiz mum verisi")
             # Only closed candles: Binance kline close time must be before current time.
             closed = [r for r in rows if int(r[6]) < int(now.timestamp() * 1000)]
             closes = [float(r[4]) for r in closed]
-            if len(closes) < 21:
+            if len(closes) < 22:
                 raise ValueError("Yeterli kapanmış 15 dakikalık mum yok")
             bar_time = int(closed[-1][6])
-            fast_prev = sum(closes[-7:-2]) / 5
-            slow_prev = sum(closes[-22:-2]) / 20
-            fast_now = sum(closes[-6:-1]) / 5
-            slow_now = sum(closes[-21:-1]) / 20
+            fast_prev = sum(closes[-6:-1]) / 5
+            slow_prev = sum(closes[-21:-1]) / 20
+            fast_now = sum(closes[-5:]) / 5
+            slow_now = sum(closes[-20:]) / 20
             px = closes[-1]
             signal = "BUY" if fast_prev <= slow_prev and fast_now > slow_now else ("SELL" if fast_prev >= slow_prev and fast_now < slow_now else "HOLD")
             prices[symbol] = px
