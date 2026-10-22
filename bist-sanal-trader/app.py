@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
-from datetime import datetime, timezone
-from urllib.parse import quote
+from datetime import datetime
 
 st.set_page_config(page_title="BIST Sanal Trader", page_icon="📈", layout="wide")
 
@@ -61,8 +60,9 @@ def get_history(symbol, period):
     delta = hist["Close"].diff()
     gain = delta.clip(lower=0).rolling(14).mean()
     loss = -delta.clip(upper=0).rolling(14).mean()
-    rs = gain / loss.replace(0, pd.NA)
+    rs = gain / loss.mask(loss == 0)
     hist["RSI14"] = 100 - (100 / (1 + rs))
+    hist.loc[(loss == 0) & (gain > 0), "RSI14"] = 100.0
     hist["RSI14"] = hist["RSI14"].fillna(50)
     hist["CrossUp"] = (hist["SMA20"] > hist["SMA50"]) & (hist["SMA20"].shift(1) <= hist["SMA50"].shift(1))
     hist["CrossDown"] = (hist["SMA20"] < hist["SMA50"]) & (hist["SMA20"].shift(1) >= hist["SMA50"].shift(1))
