@@ -6,7 +6,7 @@ import requests
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "crypto_portfolio.json"
 REPORT_PATH = ROOT / "crypto_report.json"
-SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD"}
+SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD"}
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
@@ -49,7 +49,7 @@ def get_yahoo_candles(ticker, now_ms):
     return candles, "Yahoo Finance chart (USD)"
 
 def get_kraken_candles(symbol):
-    pair = "XBTUSDT" if symbol == "BTCUSDT" else "ETHUSDT"
+    pair = {"BTCUSDT": "XBTUSDT", "ETHUSDT": "ETHUSDT", "SOLUSDT": "SOLUSDT"}[symbol]
     response = SESSION.get("https://api.kraken.com/0/public/OHLC", params={"pair": pair, "interval": 15}, timeout=20)
     response.raise_for_status()
     payload = response.json()
