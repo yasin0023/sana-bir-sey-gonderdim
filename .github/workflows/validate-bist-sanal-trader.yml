@@ -4,6 +4,7 @@ on:
     paths:
       - 'bist-sanal-trader/**'
       - '.github/workflows/validate-bist-sanal-trader.yml'
+      - '.github/workflows/bist-paper-trader-background.yml'
   workflow_dispatch:
 jobs:
   validate:
@@ -14,4 +15,4 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r bist-sanal-trader/requirements.txt
-      - run: python -m py_compile bist-sanal-trader/app.py
+      - run: python -m py_compile bist-sanal-trader/app.py bist-sanal-trader/background_trader.py
