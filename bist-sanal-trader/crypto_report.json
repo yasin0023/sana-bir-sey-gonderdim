@@ -1,0 +1,15 @@
+{
+  "last_run": null,
+  "mode": "paper_only",
+  "source": "Binance public spot klines; 15-minute closed candles",
+  "prices": {},
+  "symbols": [],
+  "errors": [],
+  "cash": 20000,
+  "market_value": 0,
+  "equity": 20000,
+  "return_pct": 0,
+  "open_positions": {},
+  "recent_trades": [],
+  "note": "Initial report; first run pending."
+}
