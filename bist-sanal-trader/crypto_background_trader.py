@@ -10,6 +10,7 @@ SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DO
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
+# DOGE support enabled; the next scheduled run will publish its price and signal.
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "Mozilla/5.0 crypto-paper-trader/1.0"})
 
