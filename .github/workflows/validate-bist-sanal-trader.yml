@@ -1,0 +1,16 @@
+name: Validate BIST paper trader
+on:
+  push:
+    paths:
+      - 'bist-sanal-trader/**'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r bist-sanal-trader/requirements.txt
+      - run: python -m py_compile bist-sanal-trader/app.py
