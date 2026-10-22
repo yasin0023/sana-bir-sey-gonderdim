@@ -45,18 +45,35 @@ async function getTicker(symbol){
   throw Error('CoinGecko geçerli fiyat döndürmedi');
  }catch(e){throw Error('Yahoo Finance: '+(lastError?.message||'erişilemiyor')+'; CoinGecko: '+e.message);}
 }
-async function prices(){
- $('btcmeta').textContent='Yahoo Finance / CoinGecko deneniyor…';$('ethmeta').textContent='Yahoo Finance / CoinGecko deneniyor…';
- const results=await Promise.allSettled([getTicker('BTCUSDT'),getTicker('ETHUSDT')]);
- let ok=0;
- if(results[0].status==='fulfilled'){$('btc').textContent=usd(results[0].value.price);$('btcmeta').textContent='BTC · '+results[0].value.source;ok++;}
- else{$('btc').textContent='Fiyat alınamadı';$('btcmeta').textContent=String(results[0].reason?.message||'Bağlantı hatası');}
- if(results[1].status==='fulfilled'){$('eth').textContent=usd(results[1].value.price);$('ethmeta').textContent='ETH · '+results[1].value.source;ok++;}
- else{$('eth').textContent='Fiyat alınamadı';$('ethmeta').textContent=String(results[1].reason?.message||'Bağlantı hatası');}
- if(ok){$('priceTime').textContent=new Date().toLocaleString('tr-TR');$('status').textContent=ok===2?'Referans fiyatları alındı. Gösterilen değerler USD cinsindedir; USDT ile küçük farklar olabilir.':'Bir varlığın referans fiyatı alındı; diğer kaynak tekrar denenecek.';$('status').className='hint '+(ok===2?'good':'error');}
- else{$('status').textContent='Fiyat kaynaklarına tarayıcıdan erişilemedi. Ağ/CORS engeli olabilir; otomatik tekrar denenecek.';$('status').className='hint error';}
+function getCachedPrice(symbol){try{const x=JSON.parse(localStorage.getItem('crypto_last_price_'+symbol)||'null');return x&&Number.isFinite(Number(x.price))?x:null;}catch(_){return null;}}
+function rememberPrice(symbol,result){try{localStorage.setItem('crypto_last_price_'+symbol,JSON.stringify({price:result.price,source:result.source,time:new Date().toISOString()}));}catch(_){}}
+function showPrice(symbol,result,isStale){
+ const key=symbol==='BTCUSDT'?'btc':'eth',meta=key+'meta';
+ $(key).textContent=usd(result.price);
+ $(meta).textContent=(symbol==='BTCUSDT'?'BTC · ':'ETH · ')+(result.source||'son bilinen fiyat')+(isStale?' · SON BİLİNEN FİYAT':'');
 }
-async function report(){try{const r=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Rapor henüz yayımlanmamış');const d=await r.json();
+async function prices(){
+ $('btcmeta').textContent='Fiyat kaynakları deneniyor…';$('ethmeta').textContent='Fiyat kaynakları deneniyor…';
+ const results=await Promise.allSettled([getTicker('BTCUSDT'),getTicker('ETHUSDT')]);
+ let ok=0, stale=0;
+ for(const [i,symbol] of ['BTCUSDT','ETHUSDT'].entries()){
+  const result=results[i];
+  if(result.status==='fulfilled'){
+   showPrice(symbol,result.value,false);rememberPrice(symbol,result.value);ok++;
+  }else{
+   const cached=getCachedPrice(symbol);
+   if(cached){showPrice(symbol,cached,true);stale++;}
+   else{
+    const key=symbol==='BTCUSDT'?'btc':'eth';
+    $(key).textContent='Fiyat alınamadı';
+    $(key+'meta').textContent=String(result.reason?.message||'Bağlantı hatası');
+   }
+  }
+ }
+ if(ok){$('priceTime').textContent=new Date().toLocaleString('tr-TR');$('status').textContent=stale?'Canlı bağlantı kesintili. Son başarılı fiyat(lar) gösteriliyor; bunlar güncel olmayabilir.':'Canlı referans fiyatları alındı. Değerler USD cinsindedir.';$('status').className='hint '+(stale?'error':'good');}
+ else if(stale){$('status').textContent='Canlı fiyat kaynaklarına erişilemiyor; kayıtlı son fiyat gösteriliyor ve güncel olmayabilir.';$('status').className='hint error';}
+ else{$('status').textContent='Fiyat kaynaklarına erişilemiyor. İnternet/ağ engeli olabilir; otomatik tekrar denenecek.';$('status').className='hint error';}
+}async function report(){try{const r=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Rapor henüz yayımlanmamış');const d=await r.json();
 const rp=d.prices||{};
 if(rp.BTCUSDT&&$('btc').textContent==='Fiyat alınamadı'){$('btc').textContent=usd(rp.BTCUSDT);$('btcmeta').textContent='Son arka plan raporu · '+((d.sources||{}).BTCUSDT||'USD referans fiyatı');}
 if(rp.ETHUSDT&&$('eth').textContent==='Fiyat alınamadı'){$('eth').textContent=usd(rp.ETHUSDT);$('ethmeta').textContent='Son arka plan raporu · '+((d.sources||{}).ETHUSDT||'USD referans fiyatı');}
