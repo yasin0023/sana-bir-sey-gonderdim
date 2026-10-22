@@ -7,6 +7,7 @@
 </style></head><body><main>
 <header class="top"><div class="brand"><div class="logo">📈</div><div><h1>BIST Sanal Trader</h1><p class="sub">Piyasa izleme · Sanal portföy · Gerçek emir yok</p></div></div><div class="actions"><button id="refreshBtn">↻ Veriyi yenile</button><button class="secondary" id="resetBtn">Sanal hesabı sıfırla</button></div></header>
 <div id="status" class="status">Açık finansal veri kaynağına bağlanılıyor…</div>
+<div class="card section"><h2>Otomatik sanal test</h2><p class="muted">Ekran 2 saniyede bir yenilenir. Fiyat verisi kaynağı gereksiz isteklerle zorlanmaması için en fazla 15 dakikada bir sorgulanır; kaynak anlık fiyat sağlamaz.</p><div class="formgrid"><div class="field"><label>Otomatik sanal alım-satım</label><select id="autoMode"><option value="off">Kapalı</option><option value="on">Açık — sanal işlemler</option></select></div><div class="field"><label>İşlem başına azami bakiye</label><select id="riskPct"><option value="5">Bakiye %5</option><option value="10">Bakiye %10</option><option value="20">Bakiye %20</option></select></div><div class="field"><label>Otomatik işlem kuralı</label><div class="status">Yeni fiyat önceki kayıttan yüksekse ve pozisyon yoksa AL; düşükse eldeki pozisyonu SAT. Deneysel basit kural.</div></div><div class="field"><label>Durum</label><div id="autoStatus" class="status">Otomatik işlem kapalı.</div></div></div><p class="foot">Yalnızca sanal işlem yapar. Tarayıcı kapalıyken bu sayfa çalışmaz; arka plan takibi için ayrıca sunucu görevi gerekir.</p></div>
 <section class="grid">
 <div class="card"><div class="label">Sanal portföy</div><div class="value" id="equity">100.000,00 TL</div><div class="hint" id="equityChange">Başlangıç: 100.000 TL</div></div>
 <div class="card"><div class="label">Kullanılabilir nakit</div><div class="value" id="cash">100.000,00 TL</div><div class="hint">Gerçek para değildir</div></div>
@@ -22,7 +23,7 @@
 </main>
 <script>
 const API="https://bilancoveri.com/api/v1/sirketler.json",META_API="https://bilancoveri.com/api/v1/meta.json",START=100000,FEE=.001,STORE="bist-sanal-trader-v03";
-let companies=[],loadedAt=null;const $=id=>document.getElementById(id);
+let companies=[],loadedAt=null,lastAutoPrices=JSON.parse(localStorage.getItem("bist-auto-last-prices")||"{}"),lastAutoTradeAt=JSON.parse(localStorage.getItem("bist-auto-last-trade")||"{}");const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2}),money=n=>fmt(n)+" TL";
 const num=v=>{if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const first=(o,ks)=>{for(const k of ks)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return o[k];return null;};
@@ -38,16 +39,42 @@ document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{$("tradeSymbo
 const old=$("tradeSymbol").value;$("tradeSymbol").innerHTML=companies.filter(c=>c.price!==null).map(c=>'<option value="'+esc(c.ticker)+'">'+esc(c.ticker)+' · '+esc(c.name)+'</option>').join("");if(companies.some(c=>c.ticker===old))$("tradeSymbol").value=old;renderTradePrice();}
 function priceFor(t){const c=companies.find(c=>c.ticker===t);return c?c.price:null;}
 function renderTradePrice(){const t=$("tradeSymbol").value,p=priceFor(t);$("tradePrice").textContent=p===null?"Bu hisse için fiyat alanı bulunamadı.":t+" son raporlanan fiyatı: "+money(p)+" · maliyet hariç";}
+function autoTradeOnFreshData(){
+ if($("autoMode").value!=="on"){ $("autoStatus").textContent="Otomatik işlem kapalı."; return; }
+ const now=Date.now(),acted=[];
+ for(const c of companies){
+  if(c.price===null||c.price<=0||!c.ticker)continue;
+  const prev=Number(lastAutoPrices[c.ticker]);
+  if(!Number.isFinite(prev)||prev<=0){lastAutoPrices[c.ticker]=c.price;continue;}
+  if(Math.abs(c.price-prev)<0.000001)continue;
+  if(now-(Number(lastAutoTradeAt[c.ticker])||0)<15*60*1000){lastAutoPrices[c.ticker]=c.price;continue;}
+  const p=state.positions[c.ticker];
+  if(c.price>prev&&!p){
+   const budget=Math.min(state.cash,START*Number($("riskPct").value)/100),qty=Math.floor(budget/(c.price*(1+FEE)));
+   if(qty>0){const gross=qty*c.price,fee=gross*FEE;state.cash-=gross+fee;state.positions[c.ticker]={qty,avg:c.price};state.trades.push({time:new Date().toLocaleString("tr-TR"),ticker:c.ticker,side:"buy",qty,price:c.price,fee,auto:true});lastAutoTradeAt[c.ticker]=now;acted.push("AL "+c.ticker+" ("+qty+")");}
+  }else if(c.price<prev&&p&&p.qty>0){
+   const qty=p.qty,gross=qty*c.price,fee=gross*FEE;state.cash+=gross-fee;delete state.positions[c.ticker];state.trades.push({time:new Date().toLocaleString("tr-TR"),ticker:c.ticker,side:"sell",qty,price:c.price,fee,auto:true});lastAutoTradeAt[c.ticker]=now;acted.push("SAT "+c.ticker+" ("+qty+")");
+  }
+  lastAutoPrices[c.ticker]=c.price;
+ }
+ localStorage.setItem("bist-auto-last-prices",JSON.stringify(lastAutoPrices));localStorage.setItem("bist-auto-last-trade",JSON.stringify(lastAutoTradeAt));
+ if(acted.length){save();$("autoStatus").textContent="Otomatik sanal işlem: "+acted.join(", ");}else $("autoStatus").textContent="Açık; yeni kaynak fiyatı değişimi bekleniyor. Son kontrol "+new Date().toLocaleTimeString("tr-TR")+".";
+}
 function renderPortfolio(){let mv=0,count=0;for(const [t,p] of Object.entries(state.positions)){const price=priceFor(t),mark=price===null?p.avg:price;mv+=p.qty*mark;if(p.qty>0)count++;}const equity=state.cash+mv,pnl=equity-START;
 $("equity").textContent=money(equity);$("equityChange").textContent="Başlangıca göre "+(pnl>=0?"+":"")+money(pnl);$("cash").textContent=money(state.cash);$("posCount").textContent=String(count);$("posValue").textContent="Piyasa değeri: "+money(mv);$("pnl").textContent=(pnl>=0?"+":"")+money(pnl);$("pnl").className="value "+(pnl>=0?"positive":"negative");$("pnlPct").textContent=(pnl>=0?"+":"")+fmt(pnl/START*100)+"% başlangıçtan";
 const positions=Object.entries(state.positions).filter(x=>x[1].qty>0);$("positions").innerHTML=positions.map(([t,p])=>{const pr=priceFor(t),mark=pr===null?p.avg:pr,pl=p.qty*(mark-p.avg);return '<div class="position"><div><b>'+esc(t)+'</b><div class="muted">'+p.qty+' adet · ort. '+money(p.avg)+'</div></div><div style="text-align:right"><b>'+money(p.qty*mark)+'</b><div class="'+(pl>=0?"positive":"negative")+'">'+(pl>=0?"+":"")+money(pl)+'</div></div></div>';}).join("")||'<div class="empty">Henüz sanal pozisyon yok.</div>';
 $("trades").innerHTML=state.trades.slice(-8).reverse().map(t=>'<div class="position"><div><b>'+(t.side==="buy"?"SANAL AL":"SANAL SAT")+' · '+esc(t.ticker)+'</b><div class="muted">'+esc(t.time)+'</div></div><div style="text-align:right"><b>'+t.qty+' adet</b><div>'+money(t.price)+'</div></div></div>').join("")||'<div class="empty">İşlem geçmişi boş.</div>';}
 async function loadData(force){$("refreshBtn").disabled=true;setStatus("Veri kaynağına bağlanılıyor…");try{const key="bist-sanal-market-cache",cached=JSON.parse(localStorage.getItem(key)||"null");if(!force&&cached&&Date.now()-cached.at<15*60*1000&&Array.isArray(cached.companies)){companies=cached.companies;loadedAt=cached.at;renderCompanies();renderPortfolio();setStatus("Önbellekteki veri kullanılıyor. Son indirme: "+new Date(loadedAt).toLocaleString("tr-TR")+".");return;}
-const response=await fetch(API,{cache:"no-store"});if(!response.ok)throw new Error("Veri servisi HTTP "+response.status);const data=await response.json();const arr=Array.isArray(data)?data:(data.companies||data.data||data.results||[]);if(!arr.length)throw new Error("Beklenen şirket listesi bulunamadı.");companies=arr.map(normalize).filter(c=>c.ticker);loadedAt=Date.now();localStorage.setItem(key,JSON.stringify({at:loadedAt,companies}));renderCompanies();renderPortfolio();let updated="";try{const m=await fetch(META_API).then(r=>r.ok?r.json():null);if(m)updated=first(m,["updated_at","updatedAt","last_updated","generated_at"])||"";}catch(e){}setStatus("Veri alındı: "+companies.length+" şirket. Tarayıcıya indirilme: "+new Date(loadedAt).toLocaleString("tr-TR")+(updated?" · kaynak güncellemesi: "+updated:"")+". Fiyatlar en az 15 dk gecikmeli olabilir.");}
+const response=await fetch(API,{cache:"no-store"});if(!response.ok)throw new Error("Veri servisi HTTP "+response.status);const data=await response.json();const arr=Array.isArray(data)?data:(data.companies||data.data||data.results||[]);if(!arr.length)throw new Error("Beklenen şirket listesi bulunamadı.");companies=arr.map(normalize).filter(c=>c.ticker);loadedAt=Date.now();localStorage.setItem(key,JSON.stringify({at:loadedAt,companies}));renderCompanies();renderPortfolio();let updated="";try{const m=await fetch(META_API).then(r=>r.ok?r.json():null);if(m)updated=first(m,["updated_at","updatedAt","last_updated","generated_at"])||"";}catch(e){}autoTradeOnFreshData();setStatus("Veri alındı: "+companies.length+" şirket. Tarayıcıya indirilme: "+new Date(loadedAt).toLocaleString("tr-TR")+(updated?" · kaynak güncellemesi: "+updated:"")+". Fiyatlar en az 15 dk gecikmeli olabilir.");}
 catch(e){const cached=JSON.parse(localStorage.getItem("bist-sanal-market-cache")||"null");if(cached&&Array.isArray(cached.companies)){companies=cached.companies;loadedAt=cached.at;renderCompanies();renderPortfolio();setStatus("Canlı veri yenilenemedi; son kaydedilen veriler gösteriliyor. Hata: "+e.message,true);}else{setStatus("Veri kaynağına erişilemedi. İnternet bağlantısını kontrol et. Hata: "+e.message,true);$("companies").innerHTML='<tr><td colspan="7" class="empty">Veri alınamadı. Biraz sonra tekrar dene.</td></tr>';}}finally{$("refreshBtn").disabled=false;}}
 $("refreshBtn").onclick=()=>loadData(true);$("search").oninput=renderCompanies;$("sort").onchange=renderCompanies;$("tradeSymbol").onchange=renderTradePrice;$("tradeSide").onchange=()=>{$("tradeBtn").textContent=$("tradeSide").value==="buy"?"Sanal AL — kaydet":"Sanal SAT — kaydet";};
 $("tradeBtn").onclick=()=>{const ticker=$("tradeSymbol").value,side=$("tradeSide").value,qty=Number($("tradeQty").value),price=priceFor(ticker);if(!ticker||price===null||!Number.isInteger(qty)||qty<1){alert("Hisse, fiyat ve tam sayı adet kontrol edilmeli.");return;}const gross=qty*price,fee=gross*FEE;if(side==="buy"){if(gross+fee>state.cash){alert("Sanal nakit yetersiz.");return;}const p=state.positions[ticker]||{qty:0,avg:0};p.avg=((p.qty*p.avg)+gross)/(p.qty+qty);p.qty+=qty;state.positions[ticker]=p;state.cash-=gross+fee;}else{const p=state.positions[ticker];if(!p||p.qty<qty){alert("Bu kadar adet sanal portföyünde yok.");return;}state.cash+=gross-fee;p.qty-=qty;if(p.qty===0)delete state.positions[ticker];}state.trades.push({time:new Date().toLocaleString("tr-TR"),ticker,side,qty,price,fee});save();alert(side==="buy"?"Sanal alış kaydedildi.":"Sanal satış kaydedildi.");};
 $("resetBtn").onclick=()=>{if(confirm("Sanal bakiye, pozisyonlar ve işlem geçmişi sıfırlansın mı?")){state={cash:START,positions:{},trades:[]};save();}};
 $("csvBtn").onclick=()=>{const rows=[["Zaman","Hisse","İşlem","Adet","Fiyat","Maliyet"],...state.trades.map(t=>[t.time,t.ticker,t.side==="buy"?"SANAL AL":"SANAL SAT",t.qty,t.price,t.fee])];const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\r\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bist-sanal-islemler.csv";a.click();URL.revokeObjectURL(a.href);};
 renderPortfolio();loadData(false);
+$("autoMode").value=localStorage.getItem("bist-auto-mode")||"off";
+$("autoMode").onchange=()=>{localStorage.setItem("bist-auto-mode",$("autoMode").value);$("autoStatus").textContent=$("autoMode").value==="on"?"Otomatik sanal işlem açıldı; yeni fiyat değişimi bekleniyor.":"Otomatik işlem kapalı.";};
+$("riskPct").value=localStorage.getItem("bist-auto-risk")||"10";
+$("riskPct").onchange=()=>localStorage.setItem("bist-auto-risk",$("riskPct").value);
+setInterval(()=>{renderPortfolio();if(loadedAt&&Date.now()-loadedAt>=15*60*1000)loadData(true);},2000);
 </script></body></html>
