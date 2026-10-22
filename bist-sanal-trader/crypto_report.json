@@ -1,15 +1,19 @@
 {
-  "last_run": null,
+  "last_run": "2026-10-22T20:44:21.935387+00:00",
   "mode": "paper_only",
   "source": "Binance public spot klines; 15-minute closed candles",
   "prices": {},
   "symbols": [],
-  "errors": [],
-  "cash": 20000,
+  "errors": [
+    "BTCUSDT: HTTPError: 451 Client Error:  for url: https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=60",
+    "ETHUSDT: HTTPError: 451 Client Error:  for url: https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=15m&limit=60"
+  ],
+  "cash": 20000.0,
   "market_value": 0,
-  "equity": 20000,
-  "return_pct": 0,
+  "equity": 20000.0,
+  "return_pct": 0.0,
   "open_positions": {},
   "recent_trades": [],
-  "note": "Initial report; first run pending."
+  "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max two positions",
+  "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
 }
