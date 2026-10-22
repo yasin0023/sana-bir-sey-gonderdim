@@ -143,7 +143,7 @@ def main():
         "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Crypto paper trader at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
+    print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
     for item in updates:
         print(item)
     for error in errors:
