@@ -139,7 +139,7 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max two positions",
+        "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max three positions",
         "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
