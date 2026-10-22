@@ -1,0 +1,17 @@
+{
+  "updated_at": "2026-10-22T20:22:09.658Z",
+  "mode": "paper_only",
+  "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
+  "symbols": [],
+  "errors": [
+    "Arka plan motoru ilk çalışmasını bekliyor."
+  ],
+  "cash": 100000,
+  "market_value": 0,
+  "equity": 100000,
+  "return_pct": 0,
+  "open_positions": {},
+  "recent_trades": [],
+  "strategy": "SMA5/SMA20 crossover; illustrative fee 0.10% per side; 10% of initial cash per entry; max 5 positions",
+  "note": "Educational simulation only. Not real-time guaranteed; not investment advice; no real orders."
+}
