@@ -1,27 +1,36 @@
 {
-  "last_run": "2026-10-22T20:58:50.471465+00:00",
+  "last_run": "2026-10-22T21:01:26.903527+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 15-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
     "BTCUSDT": "Yahoo Finance chart (USD)",
-    "ETHUSDT": "Yahoo Finance chart (USD)"
+    "ETHUSDT": "Yahoo Finance chart (USD)",
+    "SOLUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81189.90625,
-    "ETHUSDT": 2380.7900390625
+    "BTCUSDT": 81163.328125,
+    "ETHUSDT": 2380.0,
+    "SOLUSDT": 103.2300033569336
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81189.90625,
-      "bar_time": 1792701000000,
+      "price": 81163.328125,
+      "bar_time": 1792701900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2380.7900390625,
-      "bar_time": 1792701000000,
+      "price": 2380.0,
+      "bar_time": 1792701900000,
+      "signal": "HOLD",
+      "source": "Yahoo Finance chart (USD)"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "price": 103.2300033569336,
+      "bar_time": 1792701900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
@@ -33,6 +42,6 @@
   "return_pct": 0.0,
   "open_positions": {},
   "recent_trades": [],
-  "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max two positions",
+  "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max three positions",
   "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
 }
