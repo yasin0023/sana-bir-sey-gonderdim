@@ -1,6 +1,10 @@
 name: Crypto Paper Trader
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/crypto-paper-trader.yml'
+      - 'bist-sanal-trader/crypto_background_trader.py'
   schedule:
     - cron: "*/15 * * * *"
 permissions:
