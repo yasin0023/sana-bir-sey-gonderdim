@@ -61,7 +61,16 @@ async function prices(){
   if(result.status==='fulfilled'){
    showPrice(symbol,result.value,false);rememberPrice(symbol,result.value);ok++;
   }else{
-   const cached=getCachedPrice(symbol);
+   let cached=getCachedPrice(symbol);
+   if(!cached){
+    try{
+     const rr=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});
+     if(rr.ok){
+      const rd=await rr.json(),p=Number((rd.prices||{})[symbol]);
+      if(Number.isFinite(p)&&p>0)cached={price:p,source:'Son arka plan raporu',time:rd.last_run||null};
+     }
+    }catch(_){}
+   }
    if(cached){showPrice(symbol,cached,true);stale++;}
    else{
     const key=symbol==='BTCUSDT'?'btc':'eth';
