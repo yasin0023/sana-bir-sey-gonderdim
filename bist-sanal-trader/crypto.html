@@ -107,33 +107,42 @@ const chartColors={up:'#48d597',down:'#ff7777',ma7:'#f2d34f',ma25:'#dc70c6',ma99
 function movingAverage(data,n){return data.map((_,i)=>i+1<n?null:data.slice(i+1-n,i+1).reduce((s,x)=>s+x.close,0)/n);}
 async function loadCandleChart(){
  const ticker=$('chartSymbol').value, interval=$('chartInterval').value;
- const symbolMap={'BTC-USD':'XBTUSDT','ETH-USD':'ETHUSDT','SOL-USD':'SOLUSDT','DOGE-USD':'DOGEUSDT'};
- const pair=symbolMap[ticker], krakenInterval=interval==='1m'?1:interval==='5m'?5:interval==='15m'?15:interval==='30m'?30:60;
- $('chartStatus').textContent='Mum verisi alınıyor…';
+ const sym={'BTC-USD':'BTCUSDT','ETH-USD':'ETHUSDT','SOL-USD':'SOLUSDT','DOGE-USD':'DOGEUSDT'}[ticker];
+ $('chartStatus').textContent='GitHub raporundaki mum verisi alınıyor…';
  try{
-  // Kraken public OHLC endpoint matches the background engine's fallback data source.
-  const url='https://api.kraken.com/0/public/OHLC?pair='+pair+'&interval='+krakenInterval;
-  const res=await fetch(url,{cache:'no-store'}); if(!res.ok)throw Error('Kraken HTTP '+res.status);
-  const payload=await res.json(); if(payload.error?.length)throw Error(payload.error.join('; '));
-  const rows=Object.entries(payload.result||{}).find(([k])=>k!=='last')?.[1]||[];
-  let data=rows.slice(0,-1).map(r=>({time:Number(r[0]),open:Number(r[1]),high:Number(r[2]),low:Number(r[3]),close:Number(r[4]),volume:Number(r[6])})).filter(x=>[x.open,x.high,x.low,x.close].every(Number.isFinite));
-  data=data.slice(-100); if(data.length<5)throw Error('Yeterli mum verisi yok');
+  // Same-origin static JSON avoids mobile-browser CORS failures from external exchanges.
+  const res=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});
+  if(!res.ok)throw Error('Rapor HTTP '+res.status);
+  const report=await res.json();
+  let data=(report.chart_candles||{})[sym]||[];
+  const seconds=interval==='1m'?60:interval==='5m'?300:interval==='15m'?900:interval==='30m'?1800:3600;
+  if(interval!=='5m'){
+   const grouped=[];
+   for(const candle of data){
+    const bucket=Math.floor(candle.time/seconds)*seconds;
+    let last=grouped[grouped.length-1];
+    if(!last||last.time!==bucket)grouped.push({time:bucket,open:candle.open,high:candle.high,low:candle.low,close:candle.close,volume:candle.volume||0});
+    else {last.high=Math.max(last.high,candle.high);last.low=Math.min(last.low,candle.low);last.close=candle.close;last.volume+=(candle.volume||0);}
+   }
+   data=grouped;
+  }
+  data=data.slice(-100);
+  if(data.length<5)throw Error('Raporda henüz yeterli mum geçmişi yok; Actions çalışmasını bekleyin');
   const ma7=movingAverage(data,7),ma25=movingAverage(data,25),ma99=movingAverage(data,99);
-  const W=900,H=300,top=12,bottom=62,left=54,right=10,plotH=195,volH=45,plotW=W-left-right;
+  const W=900,H=300,top=12,left=54,right=10,plotH=195,volH=45,plotW=W-left-right;
   const lo=Math.min(...data.map(x=>x.low)),hi=Math.max(...data.map(x=>x.high)),pad=(hi-lo)*.08||1,min=lo-pad,max=hi+pad;
-  const y=p=>top+(max-p)/(max-min)*plotH, step=plotW/data.length,body=Math.max(2,step*.58);
-  const maxVol=Math.max(1,...data.map(x=>x.volume)),vy=v=>top+plotH+8+(1-v/maxVol)*volH;
-  const pathFor=(arr,color)=>{let d='';arr.forEach((v,i)=>{if(v===null)return;d+=(d?' L':'M')+(left+i*step+step/2).toFixed(2)+' '+y(v).toFixed(2)});return d?'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.8" opacity=".95"/>':''};
+  const y=p=>top+(max-p)/(max-min)*plotH,step=plotW/data.length,body=Math.max(2,step*.58);
+  const maxVol=Math.max(1,...data.map(x=>x.volume||0)),vy=v=>top+plotH+8+(1-(v||0)/maxVol)*volH;
+  const pathFor=(arr,color)=>{let d='';arr.forEach((v,i)=>{if(v===null)return;d+=(d?' L':'M')+(left+i*step+step/2).toFixed(2)+' '+y(v).toFixed(2)});return d?'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.8"/>':''};
   let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mum grafiği" style="display:block;width:100%;height:auto;background:#0b1020;border-radius:10px">';
-  for(let k=0;k<5;k++){const val=min+(max-min)*k/4,yy=y(val);svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(W-right)+'" y2="'+yy+'" stroke="'+chartColors.grid+'" stroke-width="1"/><text x="'+(left-7)+'" y="'+(yy+4)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="end">'+val.toLocaleString('en-US',{maximumFractionDigits:3})+'</text>';}
-  data.forEach((d,i)=>{const x=left+i*step+step/2,col=d.close>=d.open?chartColors.up:chartColors.down;svg+='<line x1="'+x+'" y1="'+y(d.high)+'" x2="'+x+'" y2="'+y(d.low)+'" stroke="'+col+'" stroke-width="1.2"/><rect x="'+(x-body/2)+'" y="'+Math.min(y(d.open),y(d.close))+'" width="'+body+'" height="'+Math.max(1,Math.abs(y(d.open)-y(d.close)))+'" fill="'+col+'"/><rect x="'+(x-body/2)+'" y="'+vy(d.volume)+'" width="'+body+'" height="'+(top+plotH+8+volH-vy(d.volume))+'" fill="'+col+'" opacity=".8"/>';});
+  for(let k=0;k<5;k++){const val=min+(max-min)*k/4,yy=y(val);svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(W-right)+'" y2="'+yy+'" stroke="'+chartColors.grid+'"/><text x="'+(left-7)+'" y="'+(yy+4)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="end">'+val.toLocaleString('en-US',{maximumFractionDigits:3})+'</text>';}
+  data.forEach((d,i)=>{const x=left+i*step+step/2,col=d.close>=d.open?chartColors.up:chartColors.down;svg+='<line x1="'+x+'" y1="'+y(d.high)+'" x2="'+x+'" y2="'+y(d.low)+'" stroke="'+col+'"/><rect x="'+(x-body/2)+'" y="'+Math.min(y(d.open),y(d.close))+'" width="'+body+'" height="'+Math.max(1,Math.abs(y(d.open)-y(d.close)))+'" fill="'+col+'"/><rect x="'+(x-body/2)+'" y="'+vy(d.volume||0)+'" width="'+body+'" height="'+(top+plotH+8+volH-vy(d.volume||0))+'" fill="'+col+'" opacity=".8"/>');});
   svg+=pathFor(ma7,chartColors.ma7)+pathFor(ma25,chartColors.ma25)+pathFor(ma99,chartColors.ma99);
-  [0,Math.floor(data.length/2),data.length-1].forEach(i=>{const date=new Date(data[i].time*1000);svg+='<text x="'+(left+i*step+step/2)+'" y="'+(H-5)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="middle">'+date.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})+'</text>';});
+  [0,Math.floor(data.length/2),data.length-1].forEach(i=>{svg+='<text x="'+(left+i*step+step/2)+'" y="'+(H-5)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="middle">'+new Date(data[i].time*1000).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})+'</text>';});
   svg+='</svg>';$('candleChart').innerHTML=svg;
-  const last=data[data.length-1];$('chartMeta').textContent=ticker.replace('-USD','')+' · Son fiyat '+usd(last.close)+' · MA(7): '+(ma7.at(-1)?.toFixed(3)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(3)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(3)||'Henüz 99 mum yok');
-  $('chartLegend').innerHTML='<span style="color:'+chartColors.ma7+'">MA(7)</span> · <span style="color:'+chartColors.ma25+'">MA(25)</span> · <span style="color:'+chartColors.ma99+'">MA(99)</span> · Yeşil/kırmızı mumlar ve hacim';
-  $('chartStatus').textContent='Son mum zamanı: '+new Date(last.time*1000).toLocaleString('tr-TR')+' · Kraken OHLC mum verisi; gecikme veya erişim kısıtı olabilir.';
- }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik verisi şu anda alınamadı.</div>';$('chartStatus').textContent='Grafik hatası: '+e.message+' · Ağ kısıtlaması olabilir.';}
+  const last=data[data.length-1];$('chartMeta').textContent=sym+' · Son fiyat '+usd(last.close)+' · MA(7): '+(ma7.at(-1)?.toFixed(3)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(3)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(3)||'Henüz 99 mum yok');
+  $('chartStatus').textContent='Son rapor: '+(report.last_run?new Date(report.last_run).toLocaleString('tr-TR'):'zaman yok')+' · Mumlar botun veri kaynağından alınır; rapor güncel olmayabilir.';
+ }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik verisi şu anda alınamadı.</div>';$('chartStatus').textContent='Grafik: '+e.message;}
 }
 $('chartLoad').addEventListener('click',loadCandleChart);$('chartSymbol').addEventListener('change',loadCandleChart);$('chartInterval').addEventListener('change',loadCandleChart);loadCandleChart();setInterval(loadCandleChart,60000);
 
