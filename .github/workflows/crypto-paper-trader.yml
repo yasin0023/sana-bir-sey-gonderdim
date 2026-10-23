@@ -6,7 +6,7 @@ on:
       - '.github/workflows/crypto-paper-trader.yml'
       - 'bist-sanal-trader/crypto_background_trader.py'
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/5 * * * *"
 permissions:
   contents: write
 concurrency:
