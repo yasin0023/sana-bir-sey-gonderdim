@@ -123,6 +123,7 @@ def main():
             state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": "SMA5/SMA20 bearish crossover; paper only"})
             del state["positions"][symbol]
         state["last_bar"][symbol] = bar_time
+        state["last_bar"][symbol] = bar_time
         state["last_prices"][symbol] = px
 
     market_value = sum(float(p["qty"]) * float(prices.get(s, state["last_prices"].get(s, p["avg"]))) for s, p in state["positions"].items())
