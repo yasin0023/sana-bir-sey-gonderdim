@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T17:55:00.022523+00:00",
+  "last_run": "2026-10-23T18:06:14.114389+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,46 +9,54 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81494.703125,
-    "ETHUSDT": 2405.18994140625,
-    "SOLUSDT": 104.30000305175781,
-    "DOGEUSDT": 0.07976000010967255
+    "BTCUSDT": 81435.390625,
+    "ETHUSDT": 2402.68994140625,
+    "SOLUSDT": 104.19000244140625,
+    "DOGEUSDT": 0.07964999973773956
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81494.703125,
-      "bar_time": 1792777800000,
+      "price": 81435.390625,
+      "high": 81535.9296875,
+      "low": 81435.390625,
+      "bar_time": 1792778400000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2405.18994140625,
-      "bar_time": 1792777800000,
+      "price": 2402.68994140625,
+      "high": 2406.7099609375,
+      "low": 2402.68994140625,
+      "bar_time": 1792778400000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.30000305175781,
-      "bar_time": 1792777800000,
+      "price": 104.19000244140625,
+      "high": 104.37999725341797,
+      "low": 104.19000244140625,
+      "bar_time": 1792778400000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07976000010967255,
-      "bar_time": 1792777800000,
+      "price": 0.07964999973773956,
+      "high": 0.07980000227689743,
+      "low": 0.07964999973773956,
+      "bar_time": 1792778400000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
   "cash": 14000.0,
-  "market_value": 5995.35790722,
-  "equity": 19995.35790722,
-  "return_pct": -0.0232,
+  "market_value": 5989.71763512,
+  "equity": 19989.71763512,
+  "return_pct": -0.0514,
   "open_positions": {
     "SOLUSDT": {
       "qty": 19.13245228538961,
@@ -96,5 +104,5 @@
     }
   ],
   "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-  "note": "Paper simulation only. TP/SL checked every 5-minute run on closed candles, so levels may be crossed between checks. +0.5% is before fees; no real orders or profit guarantee."
+  "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
 }
