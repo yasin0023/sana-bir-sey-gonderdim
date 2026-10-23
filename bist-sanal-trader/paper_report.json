@@ -1,15 +1,62 @@
 {
-  "updated_at": "2026-10-22T20:22:09.658Z",
+  "updated_at": "2026-10-23T12:31:58.231992+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
-  "symbols": [],
-  "errors": [
-    "Arka plan motoru ilk çalışmasını bekliyor."
+  "symbols": [
+    {
+      "symbol": "THYAO",
+      "price": 251.5,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "ASELS",
+      "price": 329.0,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "TUPRS",
+      "price": 353.5,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "BIMAS",
+      "price": 367.25,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "AKBNK",
+      "price": 61.4,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "GARAN",
+      "price": 122.9,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "FROTO",
+      "price": 63.35,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    },
+    {
+      "symbol": "SISE",
+      "price": 32.9,
+      "bar_time": "2026-10-23T15:00:00+03:00",
+      "signal": "HOLD"
+    }
   ],
-  "cash": 100000,
+  "errors": [],
+  "cash": 100000.0,
   "market_value": 0,
-  "equity": 100000,
-  "return_pct": 0,
+  "equity": 100000.0,
+  "return_pct": 0.0,
   "open_positions": {},
   "recent_trades": [],
   "strategy": "SMA5/SMA20 crossover; illustrative fee 0.10% per side; 10% of initial cash per entry; max 5 positions",
