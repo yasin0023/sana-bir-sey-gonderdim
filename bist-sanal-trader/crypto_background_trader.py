@@ -11,7 +11,7 @@ START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
 TAKE_PROFIT_PCT = 0.005
-STOP_LOSS_PCT = 0.005
+STOP_LOSS_PCT = 0.001
 MAX_OPEN_POSITIONS = 4
 # DOGE support enabled; the next scheduled run will publish its price and signal.
 SESSION = requests.Session()
@@ -123,7 +123,7 @@ def main():
             # Check candle high/low for intrabar target/stop touches.
             # If both levels were touched in one candle, assume stop first (conservative).
             if bar_low <= stop:
-                exit_reason = "Stop-loss -0.5% gross; candle low touched stop; paper only"
+                exit_reason = "Stop-loss -0.1% gross; candle low touched stop; paper only"
                 px = stop
             elif bar_high >= target:
                 exit_reason = "Take-profit +0.5% gross; candle high touched target; paper only"
@@ -165,8 +165,8 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-        "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
+        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
+        "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. Stop-loss is -0.1% gross and take-profit is +0.5% gross. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
