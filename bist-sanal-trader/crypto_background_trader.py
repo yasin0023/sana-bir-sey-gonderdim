@@ -43,7 +43,7 @@ def get_yahoo_candles(ticker, now_ms):
     closes = ((item.get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
     candles = []
     for ts, close in zip(timestamps, closes):
-        if close is not None and int(ts) * 1000 + 15 * 60 * 1000 <= now_ms:
+        if close is not None and int(ts) * 1000 + 5 * 60 * 1000 <= now_ms:
             candles.append((int(ts) * 1000, float(close)))
     if len(candles) < 22:
         raise ValueError(f"Yahoo Finance yeterli kapanmış mum döndürmedi: {len(candles)}")
@@ -51,7 +51,7 @@ def get_yahoo_candles(ticker, now_ms):
 
 def get_kraken_candles(symbol):
     pair = {"BTCUSDT": "XBTUSDT", "ETHUSDT": "ETHUSDT", "SOLUSDT": "SOLUSDT", "DOGEUSDT": "DOGEUSDT"}[symbol]
-    response = SESSION.get("https://api.kraken.com/0/public/OHLC", params={"pair": pair, "interval": 15}, timeout=20)
+    response = SESSION.get("https://api.kraken.com/0/public/OHLC", params={"pair": pair, "interval": 5}, timeout=20)
     response.raise_for_status()
     payload = response.json()
     if payload.get("error"):
@@ -136,7 +136,7 @@ def main():
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     report = {
         "last_run": now.isoformat(), "mode": "paper_only",
-        "source": "Yahoo Finance 15-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
+        "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
         "sources": sources, "prices": prices, "symbols": updates, "errors": errors,
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
