@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T18:06:14.114389+00:00",
+  "last_run": "2026-10-23T18:23:45.809736+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,67 +9,55 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81435.390625,
-    "ETHUSDT": 2402.68994140625,
-    "SOLUSDT": 104.19000244140625,
+    "BTCUSDT": 81500.0,
+    "ETHUSDT": 2404.550048828125,
+    "SOLUSDT": 104.19999694824219,
     "DOGEUSDT": 0.07964999973773956
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81435.390625,
-      "high": 81535.9296875,
-      "low": 81435.390625,
-      "bar_time": 1792778400000,
+      "price": 81500.0,
+      "high": 81558.7421875,
+      "low": 81500.0,
+      "bar_time": 1792779300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2402.68994140625,
-      "high": 2406.7099609375,
-      "low": 2402.68994140625,
-      "bar_time": 1792778400000,
+      "price": 2404.550048828125,
+      "high": 2407.3798828125,
+      "low": 2404.530029296875,
+      "bar_time": 1792779300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.19000244140625,
-      "high": 104.37999725341797,
+      "price": 104.19999694824219,
+      "high": 104.33999633789062,
       "low": 104.19000244140625,
-      "bar_time": 1792778400000,
+      "bar_time": 1792779300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
       "price": 0.07964999973773956,
-      "high": 0.07980000227689743,
+      "high": 0.07971999794244766,
       "low": 0.07964999973773956,
-      "bar_time": 1792778400000,
+      "bar_time": 1792779300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
-  "cash": 14000.0,
-  "market_value": 5989.71763512,
-  "equity": 19989.71763512,
-  "return_pct": -0.0514,
+  "cash": 17988.01598402,
+  "market_value": 2003.80199523,
+  "equity": 19991.81797925,
+  "return_pct": -0.0409,
   "open_positions": {
-    "SOLUSDT": {
-      "qty": 19.13245228538961,
-      "avg": 104.43000030517578,
-      "entry_fee": 1.998001998001998,
-      "entry_time": "2026-10-23T12:36:30.770571+00:00"
-    },
-    "BTCUSDT": {
-      "qty": 0.02448635012047227,
-      "avg": 81596.5625,
-      "entry_fee": 1.9980019980019983,
-      "entry_time": "2026-10-23T13:21:23.896030+00:00"
-    },
     "ETHUSDT": {
       "qty": 0.833337611834982,
       "avg": 2397.590087890625,
@@ -101,8 +89,26 @@
       "qty": 0.833337611834982,
       "price": 2397.590087890625,
       "reason": "SMA5/SMA20 bullish crossover; paper only"
+    },
+    {
+      "time": "2026-10-23T18:23:45.809736+00:00",
+      "symbol": "BTCUSDT",
+      "side": "SELL",
+      "qty": 0.02448635012047227,
+      "price": 81514.9659375,
+      "realized_pnl": -5.99200799,
+      "reason": "Stop-loss -0.1% gross; candle low touched stop; paper only"
+    },
+    {
+      "time": "2026-10-23T18:23:45.809736+00:00",
+      "symbol": "SOLUSDT",
+      "side": "SELL",
+      "qty": 19.13245228538961,
+      "price": 104.32557030487061,
+      "realized_pnl": -5.99200799,
+      "reason": "Stop-loss -0.1% gross; candle low touched stop; paper only"
     }
   ],
-  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-  "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
+  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
+  "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. Stop-loss is -0.1% gross and take-profit is +0.5% gross. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
 }
