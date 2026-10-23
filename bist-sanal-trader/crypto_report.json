@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T13:22:56.623925+00:00",
+  "last_run": "2026-10-23T17:55:00.022523+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,46 +9,46 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81545.890625,
-    "ETHUSDT": 2395.7900390625,
-    "SOLUSDT": 104.2300033569336,
-    "DOGEUSDT": 0.07991000264883041
+    "BTCUSDT": 81494.703125,
+    "ETHUSDT": 2405.18994140625,
+    "SOLUSDT": 104.30000305175781,
+    "DOGEUSDT": 0.07976000010967255
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81545.890625,
-      "bar_time": 1792761300000,
-      "signal": "SELL",
+      "price": 81494.703125,
+      "bar_time": 1792777800000,
+      "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2395.7900390625,
-      "bar_time": 1792761300000,
-      "signal": "SELL",
+      "price": 2405.18994140625,
+      "bar_time": 1792777800000,
+      "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.2300033569336,
-      "bar_time": 1792761300000,
+      "price": 104.30000305175781,
+      "bar_time": 1792777800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07991000264883041,
-      "bar_time": 1792761300000,
+      "price": 0.07976000010967255,
+      "bar_time": 1792777800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
   "cash": 14000.0,
-  "market_value": 5987.43874427,
-  "equity": 19987.43874427,
-  "return_pct": -0.0628,
+  "market_value": 5995.35790722,
+  "equity": 19995.35790722,
+  "return_pct": -0.0232,
   "open_positions": {
     "SOLUSDT": {
       "qty": 19.13245228538961,
