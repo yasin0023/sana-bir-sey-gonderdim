@@ -1,4 +1,5 @@
 import json
+import random
 from datetime import datetime, timezone
 from pathlib import Path
 import requests
@@ -6,7 +7,7 @@ import requests
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "crypto_portfolio.json"
 REPORT_PATH = ROOT / "crypto_report.json"
-SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DOGEUSDT": "DOGE-USD"}
+SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DOGEUSDT": "DOGE-USD", "YASINCOIN": "SYNTHETIC"}
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
@@ -71,7 +72,44 @@ def get_kraken_candles(symbol):
         raise ValueError(f"Kraken yeterli kapanmış mum döndürmedi: {len(candles)}")
     return candles, "Kraken OHLC (USDT)"
 
-def get_candles(symbol, now_ms):
+def get_yasincoin_candles(state, now_ms):
+    """Generate a clearly labelled fictional paper-only YASINCOIN market."""
+    step = 5 * 60 * 1000
+    latest_closed = (now_ms // step) * step - step
+    candles = state.setdefault("yasincoin_candles", [])
+    candles = [tuple(row) for row in candles if len(row) == 4]
+    if not candles:
+        # Seed 30 historical fictional candles around 1.00 for SMA calculations.
+        start = latest_closed - 29 * step
+        price = 1.0
+        for ts in range(start, latest_closed + 1, step):
+            rng = random.Random(ts ^ 0x594153494E)
+            change = rng.uniform(-0.004, 0.004)
+            close = max(0.01, price * (1 + change))
+            high = max(price, close) * (1 + rng.uniform(0.0, 0.002))
+            low = min(price, close) * (1 - rng.uniform(0.0, 0.002))
+            candles.append((ts, close, high, low))
+            price = close
+    else:
+        candles.sort(key=lambda row: int(row[0]))
+        price = float(candles[-1][1])
+        next_ts = int(candles[-1][0]) + step
+        while next_ts <= latest_closed:
+            rng = random.Random(next_ts ^ 0x594153494E)
+            change = rng.uniform(-0.004, 0.004)
+            close = max(0.01, price * (1 + change))
+            high = max(price, close) * (1 + rng.uniform(0.0, 0.002))
+            low = min(price, close) * (1 - rng.uniform(0.0, 0.002))
+            candles.append((next_ts, close, high, low))
+            price = close
+            next_ts += step
+    candles = candles[-500:]
+    state["yasincoin_candles"] = [list(row) for row in candles]
+    return candles, "YASINCOIN fictional synthetic feed (paper only)"
+
+def get_candles(symbol, now_ms, state):
+    if symbol == "YASINCOIN":
+        return get_yasincoin_candles(state, now_ms)
     errors = []
     ticker = SYMBOLS[symbol]
     try:
@@ -93,7 +131,7 @@ def main():
     prices, updates, errors, sources = {}, [], [], {}
     for symbol in SYMBOLS:
         try:
-            candles, source = get_candles(symbol, now_ms)
+            candles, source = get_candles(symbol, now_ms, state)
             closes = [c[1] for c in candles]
             bar_time, px, bar_high, bar_low = candles[-1]
             fast_prev = sum(closes[-6:-1]) / 5
@@ -165,8 +203,8 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-        "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. Stop-loss is -0.1% gross and take-profit is +0.5% gross. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
+        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions; YASINCOIN is fictional synthetic paper-only data",
+        "note": "Paper simulation only; no real orders. YASINCOIN is a fictional synthetic asset with generated prices, not a listed cryptocurrency and not real market data. TP/SL checks each newly closed 5-minute candle: stop-loss -0.1% gross, take-profit +0.5% gross. If both levels are touched in one candle, stop-loss is assumed first. Fees and simulated fills mean results may differ; no profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
