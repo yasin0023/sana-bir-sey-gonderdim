@@ -1,62 +1,73 @@
 {
-  "last_run": "2026-10-23T18:23:45.809736+00:00",
+  "last_run": "2026-10-23T18:30:51.502190+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
     "BTCUSDT": "Yahoo Finance chart (USD)",
     "ETHUSDT": "Yahoo Finance chart (USD)",
     "SOLUSDT": "Yahoo Finance chart (USD)",
-    "DOGEUSDT": "Yahoo Finance chart (USD)"
+    "DOGEUSDT": "Yahoo Finance chart (USD)",
+    "YASINCOIN": "YASINCOIN fictional synthetic feed (paper only)"
   },
   "prices": {
-    "BTCUSDT": 81500.0,
-    "ETHUSDT": 2404.550048828125,
-    "SOLUSDT": 104.19999694824219,
-    "DOGEUSDT": 0.07964999973773956
+    "BTCUSDT": 81448.578125,
+    "ETHUSDT": 2403.949951171875,
+    "SOLUSDT": 104.12999725341797,
+    "DOGEUSDT": 0.07963000237941742,
+    "YASINCOIN": 0.9956739647803436
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81500.0,
-      "high": 81558.7421875,
-      "low": 81500.0,
-      "bar_time": 1792779300000,
+      "price": 81448.578125,
+      "high": 81490.9765625,
+      "low": 81427.1796875,
+      "bar_time": 1792779900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2404.550048828125,
-      "high": 2407.3798828125,
-      "low": 2404.530029296875,
-      "bar_time": 1792779300000,
+      "price": 2403.949951171875,
+      "high": 2404.330078125,
+      "low": 2402.010009765625,
+      "bar_time": 1792779900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.19999694824219,
-      "high": 104.33999633789062,
-      "low": 104.19000244140625,
-      "bar_time": 1792779300000,
+      "price": 104.12999725341797,
+      "high": 104.19999694824219,
+      "low": 104.05999755859375,
+      "bar_time": 1792779900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07964999973773956,
-      "high": 0.07971999794244766,
-      "low": 0.07964999973773956,
-      "bar_time": 1792779300000,
+      "price": 0.07963000237941742,
+      "high": 0.07964999973773956,
+      "low": 0.07957000285387039,
+      "bar_time": 1792779900000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
+    },
+    {
+      "symbol": "YASINCOIN",
+      "price": 0.9956739647803436,
+      "high": 0.9988302062246855,
+      "low": 0.9953543253108745,
+      "bar_time": 1792779900000,
+      "signal": "HOLD",
+      "source": "YASINCOIN fictional synthetic feed (paper only)"
     }
   ],
   "errors": [],
   "cash": 17988.01598402,
-  "market_value": 2003.80199523,
-  "equity": 19991.81797925,
-  "return_pct": -0.0409,
+  "market_value": 2003.30191128,
+  "equity": 19991.3178953,
+  "return_pct": -0.0434,
   "open_positions": {
     "ETHUSDT": {
       "qty": 0.833337611834982,
@@ -109,6 +120,6 @@
       "reason": "Stop-loss -0.1% gross; candle low touched stop; paper only"
     }
   ],
-  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-  "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. Stop-loss is -0.1% gross and take-profit is +0.5% gross. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
+  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions; YASINCOIN is fictional synthetic paper-only data",
+  "note": "Paper simulation only; no real orders. YASINCOIN is a fictional synthetic asset with generated prices, not a listed cryptocurrency and not real market data. TP/SL checks each newly closed 5-minute candle: stop-loss -0.1% gross, take-profit +0.5% gross. If both levels are touched in one candle, stop-loss is assumed first. Fees and simulated fills mean results may differ; no profit guarantee."
 }
