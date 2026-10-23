@@ -10,8 +10,8 @@ SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DO
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
-TAKE_PROFIT_PCT = 0.003  # Yaklaşık %0,1 net kâr hedefi; iki yönlü ücret hesaba katılır
-MIN_NET_PROFIT_USDT = 0.01  # Ücretlerden sonra en az bu kadar kâr yoksa satış yapma
+MIN_NET_PROFIT_TRY = 1.0  # Alış ve satış komisyonlarından sonra hedef net kâr (TL)
+DEFAULT_USDTRY = 40.0  # Kur servisi çalışmazsa ihtiyatlı olmayan yaklaşık yedek; raporda belirtilir
 MAX_OPEN_POSITIONS = 4
 # DOGE support enabled; the next scheduled run will publish its price and signal.
 SESSION = requests.Session()
@@ -86,8 +86,23 @@ def get_candles(symbol, now_ms):
         errors.append(f"Kraken: {type(exc).__name__}: {exc}")
     raise RuntimeError(" | ".join(errors))
 
+def get_usdtry():
+    """Fetch an indicative USD/TRY rate to convert the 1 TL net-profit target."""
+    response = SESSION.get("https://api.frankfurter.app/latest", params={"from": "USD", "to": "TRY"}, timeout=10)
+    response.raise_for_status()
+    rate = float(response.json()["rates"]["TRY"])
+    if rate <= 0:
+        raise ValueError("USD/TRY kuru geçersiz")
+    return rate, "Frankfurter reference rate"
+
 def main():
     state = load_state()
+    try:
+        usdtry, fx_source = get_usdtry()
+    except Exception as exc:
+        # Do not silently pretend the target is exact if live FX is unavailable.
+        usdtry, fx_source = DEFAULT_USDTRY, f"fallback rate {DEFAULT_USDTRY}; live FX failed: {exc}"
+    min_net_profit_quote = MIN_NET_PROFIT_TRY / usdtry
     now = datetime.now(timezone.utc)
     now_ms = int(now.timestamp() * 1000)
     prices, updates, errors, sources = {}, [], [], {}
@@ -118,24 +133,23 @@ def main():
             entry = float(pos["avg"])
             move_pct = (px / entry) - 1 if entry > 0 else 0.0
             exit_reason = None
-            target = entry * (1 + TAKE_PROFIT_PCT)
-            # Zarar durdurma yok: pozisyonu yalnızca ücretlerden sonra kâr varsa kapat.
-            # Fiyat düşerse pozisyon uzun süre açık kalabilir; sıfır zarar garantisi yoktur.
+            qty = float(pos["qty"])
+            # Solve for the sell price that covers entry cost, both fees, and at least 1 TL net.
+            target = (qty * entry + float(pos.get("entry_fee", 0)) + min_net_profit_quote) / (qty * (1 - FEE))
+            # No stop-loss: don't intentionally close at a net loss. This can leave losing positions open.
             if bar_high >= target:
                 px = target
-                exit_reason = "Net kâr hedefi yaklaşık +%0,1; ücretlerden sonra kâr kontrolü"
+                exit_reason = f"Net kâr hedefi en az {MIN_NET_PROFIT_TRY:.2f} TL; iki komisyon sonrası"
             elif signal == "SELL":
-                # Aşağı yönlü kesişim tek başına satış sebebi değildir.
-                qty = float(pos["qty"])
+                # Bearish crossover alone is not enough; sell only if net profit reaches the TL target.
                 candidate_fee = qty * px * FEE
                 candidate_realized = qty * px - candidate_fee - qty * entry - float(pos.get("entry_fee", 0))
-                if candidate_realized >= MIN_NET_PROFIT_USDT:
-                    exit_reason = "SMA5/SMA20 aşağı kesişiminde ücretler sonrası net kâr"
+                if candidate_realized >= min_net_profit_quote:
+                    exit_reason = f"Aşağı kesişim; net kâr en az {MIN_NET_PROFIT_TRY:.2f} TL"
             if exit_reason:
-                qty = float(pos["qty"])
                 fee = qty * px * FEE
                 realized = qty * px - fee - qty * entry - float(pos.get("entry_fee", 0))
-                if realized >= MIN_NET_PROFIT_USDT:
+                if realized >= min_net_profit_quote:
                     state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
                     state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": exit_reason})
                     del state["positions"][symbol]
@@ -167,8 +181,9 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "5-minute closed candles; SMA5/SMA20 entry; profit-only exits after fees; target approx +0.3% gross to aim for approx +0.1% net; bearish crossover only exits if net profit >= 0.01 USDT; no stop-loss; max 10% initial balance per entry; max four positions",
-        "note": "Paper simulation only; no real orders. Bot exits only when estimated realized PnL after entry and exit fees is at least 0.01 USDT. The target is about +0.3% gross to aim for about +0.1% net, but fees, quote differences, candle granularity and simulated fills can change results. No stop-loss means losing positions may remain open for a long time or never recover; zero-loss/profit is not guaranteed."
+        "strategy": f"5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least {MIN_NET_PROFIT_TRY:.2f} TRY (quote threshold {min_net_profit_quote:.6f}); USD/TRY source: {fx_source}; no stop-loss; max 10% initial balance per entry; max four positions",
+        "usdtry": usdtry, "fx_source": fx_source, "min_net_profit_try": MIN_NET_PROFIT_TRY,
+        "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; no stop-loss means losing positions may remain open indefinitely. Zero-loss/profit and continuous trades are not guaranteed."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
