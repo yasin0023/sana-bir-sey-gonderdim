@@ -10,6 +10,9 @@ SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DO
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
+TAKE_PROFIT_PCT = 0.005
+STOP_LOSS_PCT = 0.005
+MAX_OPEN_POSITIONS = 4
 # DOGE support enabled; the next scheduled run will publish its price and signal.
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "Mozilla/5.0 crypto-paper-trader/1.0"})
@@ -29,7 +32,7 @@ def load_state():
 
 def get_yahoo_candles(ticker, now_ms):
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
-    response = SESSION.get(url, params={"range": "5d", "interval": "15m", "events": "history"}, timeout=20)
+    response = SESSION.get(url, params={"range": "5d", "interval": "5m", "events": "history"}, timeout=20)
     response.raise_for_status()
     payload = response.json()
     chart = payload.get("chart", {})
@@ -107,7 +110,27 @@ def main():
         if state["last_bar"].get(symbol) == bar_time:
             continue
         pos = state["positions"].get(symbol)
-        if signal == "BUY" and not pos:
+        closed_this_bar = False
+        if pos:
+            entry = float(pos["avg"])
+            move_pct = (px / entry) - 1 if entry > 0 else 0.0
+            exit_reason = None
+            if move_pct >= TAKE_PROFIT_PCT:
+                exit_reason = "Take-profit +0.5% gross; paper only"
+            elif move_pct <= -STOP_LOSS_PCT:
+                exit_reason = "Stop-loss -0.5% gross; paper only"
+            elif signal == "SELL":
+                exit_reason = "SMA5/SMA20 bearish crossover; paper only"
+            if exit_reason:
+                qty = float(pos["qty"])
+                fee = qty * px * FEE
+                realized = qty * px - fee - qty * entry - float(pos.get("entry_fee", 0))
+                state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
+                state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": exit_reason})
+                del state["positions"][symbol]
+                pos = None
+                closed_this_bar = True
+        if signal == "BUY" and not pos and not closed_this_bar and len(state["positions"]) < MAX_OPEN_POSITIONS:
             budget = min(float(state["cash"]), START_CASH * MAX_POSITION_PCT)
             qty = budget / (px * (1 + FEE))
             if qty > 0:
@@ -115,14 +138,6 @@ def main():
                 state["cash"] = round(float(state["cash"]) - qty * px - fee, 8)
                 state["positions"][symbol] = {"qty": qty, "avg": px, "entry_fee": fee, "entry_time": now.isoformat()}
                 state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "BUY", "qty": qty, "price": px, "reason": "SMA5/SMA20 bullish crossover; paper only"})
-        elif signal == "SELL" and pos:
-            qty = float(pos["qty"])
-            fee = qty * px * FEE
-            realized = qty * px - fee - qty * float(pos["avg"]) - float(pos.get("entry_fee", 0))
-            state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
-            state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": "SMA5/SMA20 bearish crossover; paper only"})
-            del state["positions"][symbol]
-        state["last_bar"][symbol] = bar_time
         state["last_bar"][symbol] = bar_time
         state["last_prices"][symbol] = px
 
@@ -141,8 +156,8 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max four positions",
-        "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
+        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
+        "note": "Paper simulation only. TP/SL checked every 5-minute run on closed candles, so levels may be crossed between checks. +0.5% is before fees; no real orders or profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
