@@ -10,8 +10,8 @@ SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DO
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
-TAKE_PROFIT_PCT = 0.005
-STOP_LOSS_PCT = 0.001
+TAKE_PROFIT_PCT = 0.003  # Yaklaşık %0,1 net kâr hedefi; iki yönlü ücret hesaba katılır
+MIN_NET_PROFIT_USDT = 0.01  # Ücretlerden sonra en az bu kadar kâr yoksa satış yapma
 MAX_OPEN_POSITIONS = 4
 # DOGE support enabled; the next scheduled run will publish its price and signal.
 SESSION = requests.Session()
@@ -119,26 +119,28 @@ def main():
             move_pct = (px / entry) - 1 if entry > 0 else 0.0
             exit_reason = None
             target = entry * (1 + TAKE_PROFIT_PCT)
-            stop = entry * (1 - STOP_LOSS_PCT)
-            # Check candle high/low for intrabar target/stop touches.
-            # If both levels were touched in one candle, assume stop first (conservative).
-            if bar_low <= stop:
-                exit_reason = "Stop-loss -0.1% gross; candle low touched stop; paper only"
-                px = stop
-            elif bar_high >= target:
-                exit_reason = "Take-profit +0.5% gross; candle high touched target; paper only"
+            # Zarar durdurma yok: pozisyonu yalnızca ücretlerden sonra kâr varsa kapat.
+            # Fiyat düşerse pozisyon uzun süre açık kalabilir; sıfır zarar garantisi yoktur.
+            if bar_high >= target:
                 px = target
+                exit_reason = "Net kâr hedefi yaklaşık +%0,1; ücretlerden sonra kâr kontrolü"
             elif signal == "SELL":
-                exit_reason = "SMA5/SMA20 bearish crossover; paper only"
+                # Aşağı yönlü kesişim tek başına satış sebebi değildir.
+                qty = float(pos["qty"])
+                candidate_fee = qty * px * FEE
+                candidate_realized = qty * px - candidate_fee - qty * entry - float(pos.get("entry_fee", 0))
+                if candidate_realized >= MIN_NET_PROFIT_USDT:
+                    exit_reason = "SMA5/SMA20 aşağı kesişiminde ücretler sonrası net kâr"
             if exit_reason:
                 qty = float(pos["qty"])
                 fee = qty * px * FEE
                 realized = qty * px - fee - qty * entry - float(pos.get("entry_fee", 0))
-                state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
-                state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": exit_reason})
-                del state["positions"][symbol]
-                pos = None
-                closed_this_bar = True
+                if realized >= MIN_NET_PROFIT_USDT:
+                    state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
+                    state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": exit_reason})
+                    del state["positions"][symbol]
+                    pos = None
+                    closed_this_bar = True
         if signal == "BUY" and not pos and not closed_this_bar and len(state["positions"]) < MAX_OPEN_POSITIONS:
             budget = min(float(state["cash"]), START_CASH * MAX_POSITION_PCT)
             qty = budget / (px * (1 + FEE))
@@ -165,8 +167,8 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
-        "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-        "note": "Paper simulation only; no real orders. TP/SL checks each newly closed 5-minute candle: stop-loss -0.1% gross, take-profit +0.5% gross. If both levels are touched in one candle, stop-loss is assumed first. Fees and simulated fills mean results may differ; no profit guarantee."
+        "strategy": "5-minute closed candles; SMA5/SMA20 entry; profit-only exits after fees; target approx +0.3% gross to aim for approx +0.1% net; bearish crossover only exits if net profit >= 0.01 USDT; no stop-loss; max 10% initial balance per entry; max four positions",
+        "note": "Paper simulation only; no real orders. Bot exits only when estimated realized PnL after entry and exit fees is at least 0.01 USDT. The target is about +0.3% gross to aim for about +0.1% net, but fees, quote differences, candle granularity and simulated fills can change results. No stop-loss means losing positions may remain open for a long time or never recover; zero-loss/profit is not guaranteed."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
