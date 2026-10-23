@@ -14,7 +14,7 @@
 <div class="card" style="margin-top:14px"><h2>Canlı mum grafiği</h2>
 <div class="row"><label for="chartSymbol">Varlık</label><select id="chartSymbol"><option value="BTC-USD">BTC</option><option value="ETH-USD">ETH</option><option value="SOL-USD">SOL</option><option value="DOGE-USD">DOGE</option></select><label for="chartInterval">Zaman aralığı</label><select id="chartInterval"><option value="1m">1 dakika</option><option value="5m" selected>5 dakika</option><option value="15m">15 dakika</option><option value="30m">30 dakika</option><option value="60m">1 saat</option></select><button id="chartLoad" class="secondary">Grafiği yenile</button></div>
 <div id="chartMeta" class="hint">Mum grafiği yükleniyor…</div><div id="chartLegend" class="hint">MA(7) · MA(25) · MA(99) · Hacim</div>
-<div id="candleChart" style="width:100%;min-height:280px;overflow:hidden"><div class="hint">Grafik yükleniyor…</div></div><div id="chartStatus" class="hint">Veri kaynağı: Yahoo Finance</div></div>
+<div id="candleChart" style="width:100%;min-height:280px;overflow:hidden"><div class="hint">Grafik yükleniyor…</div></div><div id="chartStatus" class="hint">Veri kaynağı: Binance public API</div></div>
 <div class="card"><h2>Otomatik sanal portföy</h2><div class="grid">
 <div><div class="label">Sanal nakit</div><div id="cash" class="value">—</div></div>
 <div><div class="label">Pozisyonların değeri</div><div id="mv" class="value">—</div></div>
@@ -107,14 +107,15 @@ const chartColors={up:'#48d597',down:'#ff7777',ma7:'#f2d34f',ma25:'#dc70c6',ma99
 function movingAverage(data,n){return data.map((_,i)=>i+1<n?null:data.slice(i+1-n,i+1).reduce((s,x)=>s+x.close,0)/n);}
 async function loadCandleChart(){
  const ticker=$('chartSymbol').value, interval=$('chartInterval').value;
- const range=interval==='1m'?'1d':interval==='5m'?'5d':interval==='15m'?'5d':interval==='30m'?'1mo':'3mo';
+ const symbolMap={'BTC-USD':'BTCUSDT','ETH-USD':'ETHUSDT','SOL-USD':'SOLUSDT','DOGE-USD':'DOGEUSDT'};
+ const pair=symbolMap[ticker], binanceInterval=interval==='60m'?'1h':interval;
  $('chartStatus').textContent='Mum verisi alınıyor…';
  try{
-  const url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(ticker)+'?range='+range+'&interval='+interval;
-  const res=await fetch(url,{cache:'no-store'}); if(!res.ok)throw Error('HTTP '+res.status);
-  const payload=await res.json(),item=payload?.chart?.result?.[0]; if(!item)throw Error('Grafik verisi boş');
-  const q=item.indicators?.quote?.[0]||{},ts=item.timestamp||[];
-  let data=ts.map((t,i)=>({time:t,open:Number(q.open?.[i]),high:Number(q.high?.[i]),low:Number(q.low?.[i]),close:Number(q.close?.[i]),volume:Number(q.volume?.[i]||0)})).filter(x=>[x.open,x.high,x.low,x.close].every(Number.isFinite));
+  // Binance public klines endpoint is used because Yahoo Finance blocks browser cross-origin requests in many mobile browsers.
+  const url='https://api.binance.com/api/v3/klines?symbol='+pair+'&interval='+binanceInterval+'&limit=100';
+  const res=await fetch(url,{cache:'no-store'}); if(!res.ok)throw Error('Binance HTTP '+res.status);
+  const rows=await res.json(); if(!Array.isArray(rows))throw Error('Grafik verisi boş');
+  let data=rows.map(r=>({time:Math.floor(Number(r[0])/1000),open:Number(r[1]),high:Number(r[2]),low:Number(r[3]),close:Number(r[4]),volume:Number(r[5])})).filter(x=>[x.open,x.high,x.low,x.close].every(Number.isFinite));
   data=data.slice(-100); if(data.length<5)throw Error('Yeterli mum verisi yok');
   const ma7=movingAverage(data,7),ma25=movingAverage(data,25),ma99=movingAverage(data,99);
   const W=900,H=300,top=12,bottom=62,left=54,right=10,plotH=195,volH=45,plotW=W-left-right;
@@ -130,7 +131,7 @@ async function loadCandleChart(){
   svg+='</svg>';$('candleChart').innerHTML=svg;
   const last=data[data.length-1];$('chartMeta').textContent=ticker.replace('-USD','')+' · Son fiyat '+usd(last.close)+' · MA(7): '+(ma7.at(-1)?.toFixed(3)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(3)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(3)||'Henüz 99 mum yok');
   $('chartLegend').innerHTML='<span style="color:'+chartColors.ma7+'">MA(7)</span> · <span style="color:'+chartColors.ma25+'">MA(25)</span> · <span style="color:'+chartColors.ma99+'">MA(99)</span> · Yeşil/kırmızı mumlar ve hacim';
-  $('chartStatus').textContent='Son mum zamanı: '+new Date(last.time*1000).toLocaleString('tr-TR')+' · Yahoo Finance verisi; gecikme olabilir.';
+  $('chartStatus').textContent='Son mum zamanı: '+new Date(last.time*1000).toLocaleString('tr-TR')+' · Binance spot mum verisi; gecikme veya erişim kısıtı olabilir.';
  }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik verisi şu anda alınamadı.</div>';$('chartStatus').textContent='Grafik hatası: '+e.message+' · Ağ kısıtlaması olabilir.';}
 }
 $('chartLoad').addEventListener('click',loadCandleChart);$('chartSymbol').addEventListener('change',loadCandleChart);$('chartInterval').addEventListener('change',loadCandleChart);loadCandleChart();setInterval(loadCandleChart,60000);
