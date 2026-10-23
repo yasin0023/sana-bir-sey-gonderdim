@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T13:21:23.896030+00:00",
+  "last_run": "2026-10-23T13:22:56.623925+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,36 +9,36 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81596.5625,
-    "ETHUSDT": 2397.590087890625,
-    "SOLUSDT": 104.33999633789062,
-    "DOGEUSDT": 0.07993999868631363
+    "BTCUSDT": 81545.890625,
+    "ETHUSDT": 2395.7900390625,
+    "SOLUSDT": 104.2300033569336,
+    "DOGEUSDT": 0.07991000264883041
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81596.5625,
+      "price": 81545.890625,
       "bar_time": 1792761300000,
-      "signal": "BUY",
+      "signal": "SELL",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2397.590087890625,
+      "price": 2395.7900390625,
       "bar_time": 1792761300000,
-      "signal": "BUY",
+      "signal": "SELL",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.33999633789062,
+      "price": 104.2300033569336,
       "bar_time": 1792761300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07993999868631363,
+      "price": 0.07991000264883041,
       "bar_time": 1792761300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
@@ -46,9 +46,9 @@
   ],
   "errors": [],
   "cash": 14000.0,
-  "market_value": 5992.2839974,
-  "equity": 19992.2839974,
-  "return_pct": -0.0386,
+  "market_value": 5987.43874427,
+  "equity": 19987.43874427,
+  "return_pct": -0.0628,
   "open_positions": {
     "SOLUSDT": {
       "qty": 19.13245228538961,
@@ -95,6 +95,6 @@
       "reason": "SMA5/SMA20 bullish crossover; paper only"
     }
   ],
-  "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max four positions",
-  "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
+  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
+  "note": "Paper simulation only. TP/SL checked every 5-minute run on closed candles, so levels may be crossed between checks. +0.5% is before fees; no real orders or profit guarantee."
 }
