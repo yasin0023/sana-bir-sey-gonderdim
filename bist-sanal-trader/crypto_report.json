@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T18:40:47.762306+00:00",
+  "last_run": "2026-10-23T18:47:30.678134+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,54 +9,54 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81392.0,
-    "ETHUSDT": 2401.1201171875,
-    "SOLUSDT": 104.04000091552734,
-    "DOGEUSDT": 0.07951000332832336
+    "BTCUSDT": 81384.3515625,
+    "ETHUSDT": 2400.7099609375,
+    "SOLUSDT": 104.05999755859375,
+    "DOGEUSDT": 0.07953000068664551
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81392.0,
-      "high": 81428.109375,
-      "low": 81388.9765625,
-      "bar_time": 1792780500000,
+      "price": 81384.3515625,
+      "high": 81416.6328125,
+      "low": 81369.8984375,
+      "bar_time": 1792780800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2401.1201171875,
-      "high": 2403.669921875,
-      "low": 2401.110107421875,
-      "bar_time": 1792780500000,
+      "price": 2400.7099609375,
+      "high": 2401.489990234375,
+      "low": 2400.10009765625,
+      "bar_time": 1792780800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.04000091552734,
-      "high": 104.16999816894531,
-      "low": 104.04000091552734,
-      "bar_time": 1792780500000,
+      "price": 104.05999755859375,
+      "high": 104.11000061035156,
+      "low": 103.98999786376953,
+      "bar_time": 1792780800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07951000332832336,
-      "high": 0.07960999757051468,
-      "low": 0.0794999971985817,
-      "bar_time": 1792780500000,
+      "price": 0.07953000068664551,
+      "high": 0.07953999936580658,
+      "low": 0.07947000116109848,
+      "bar_time": 1792780800000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
   "cash": 17988.01598402,
-  "market_value": 2000.94370419,
-  "equity": 19988.95968821,
-  "return_pct": -0.0552,
+  "market_value": 2000.60190556,
+  "equity": 19988.61788958,
+  "return_pct": -0.0569,
   "open_positions": {
     "ETHUSDT": {
       "qty": 0.833337611834982,
@@ -109,6 +109,6 @@
       "reason": "Stop-loss -0.1% gross; candle low touched stop; paper only"
     }
   ],
-  "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.1% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-  "note": "Paper simulation only; no real orders. TP/SL checks each newly closed 5-minute candle: stop-loss -0.1% gross, take-profit +0.5% gross. If both levels are touched in one candle, stop-loss is assumed first. Fees and simulated fills mean results may differ; no profit guarantee."
+  "strategy": "5-minute closed candles; SMA5/SMA20 entry; profit-only exits after fees; target approx +0.3% gross to aim for approx +0.1% net; bearish crossover only exits if net profit >= 0.01 USDT; no stop-loss; max 10% initial balance per entry; max four positions",
+  "note": "Paper simulation only; no real orders. Bot exits only when estimated realized PnL after entry and exit fees is at least 0.01 USDT. The target is about +0.3% gross to aim for about +0.1% net, but fees, quote differences, candle granularity and simulated fills can change results. No stop-loss means losing positions may remain open for a long time or never recover; zero-loss/profit is not guaranteed."
 }
