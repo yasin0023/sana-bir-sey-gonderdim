@@ -43,11 +43,14 @@ def get_yahoo_candles(ticker, now_ms):
         raise ValueError("Yahoo Finance mum verisi boş")
     item = result[0]
     timestamps = item.get("timestamp") or []
-    closes = ((item.get("indicators") or {}).get("quote") or [{}])[0].get("close") or []
+    quote = ((item.get("indicators") or {}).get("quote") or [{}])[0]
+    closes, highs, lows = quote.get("close") or [], quote.get("high") or [], quote.get("low") or []
     candles = []
-    for ts, close in zip(timestamps, closes):
+    for i, (ts, close) in enumerate(zip(timestamps, closes)):
         if close is not None and int(ts) * 1000 + 5 * 60 * 1000 <= now_ms:
-            candles.append((int(ts) * 1000, float(close)))
+            high = highs[i] if i < len(highs) else None
+            low = lows[i] if i < len(lows) else None
+            candles.append((int(ts) * 1000, float(close), float(high if high is not None else close), float(low if low is not None else close)))
     if len(candles) < 22:
         raise ValueError(f"Yahoo Finance yeterli kapanmış mum döndürmedi: {len(candles)}")
     return candles, "Yahoo Finance chart (USD)"
@@ -63,7 +66,7 @@ def get_kraken_candles(symbol):
     key = next((k for k in result if k != "last"), None)
     rows = result.get(key, []) if key else []
     # Kraken's final row is the currently forming candle, so exclude it.
-    candles = [(int(r[0]) * 1000, float(r[4])) for r in rows[:-1] if r[4] is not None]
+    candles = [(int(r[0]) * 1000, float(r[4]), float(r[2]), float(r[3])) for r in rows[:-1] if r[4] is not None]
     if len(candles) < 22:
         raise ValueError(f"Kraken yeterli kapanmış mum döndürmedi: {len(candles)}")
     return candles, "Kraken OHLC (USDT)"
@@ -92,21 +95,21 @@ def main():
         try:
             candles, source = get_candles(symbol, now_ms)
             closes = [c[1] for c in candles]
-            bar_time = candles[-1][0]
+            bar_time, px, bar_high, bar_low = candles[-1]
             fast_prev = sum(closes[-6:-1]) / 5
             slow_prev = sum(closes[-21:-1]) / 20
             fast_now = sum(closes[-5:]) / 5
             slow_now = sum(closes[-20:]) / 20
-            px = closes[-1]
             signal = "BUY" if fast_prev <= slow_prev and fast_now > slow_now else ("SELL" if fast_prev >= slow_prev and fast_now < slow_now else "HOLD")
             prices[symbol] = px
             sources[symbol] = source
-            updates.append({"symbol": symbol, "price": px, "bar_time": bar_time, "signal": signal, "source": source})
+            updates.append({"symbol": symbol, "price": px, "high": bar_high, "low": bar_low, "bar_time": bar_time, "signal": signal, "source": source})
         except Exception as exc:
             errors.append(f"{symbol}: {type(exc).__name__}: {exc}")
 
     for item in updates:
         symbol, px, bar_time, signal = item["symbol"], item["price"], item["bar_time"], item["signal"]
+        bar_high, bar_low = float(item.get("high", px)), float(item.get("low", px))
         if state["last_bar"].get(symbol) == bar_time:
             continue
         pos = state["positions"].get(symbol)
@@ -115,10 +118,16 @@ def main():
             entry = float(pos["avg"])
             move_pct = (px / entry) - 1 if entry > 0 else 0.0
             exit_reason = None
-            if move_pct >= TAKE_PROFIT_PCT:
-                exit_reason = "Take-profit +0.5% gross; paper only"
-            elif move_pct <= -STOP_LOSS_PCT:
-                exit_reason = "Stop-loss -0.5% gross; paper only"
+            target = entry * (1 + TAKE_PROFIT_PCT)
+            stop = entry * (1 - STOP_LOSS_PCT)
+            # Check candle high/low for intrabar target/stop touches.
+            # If both levels were touched in one candle, assume stop first (conservative).
+            if bar_low <= stop:
+                exit_reason = "Stop-loss -0.5% gross; candle low touched stop; paper only"
+                px = stop
+            elif bar_high >= target:
+                exit_reason = "Take-profit +0.5% gross; candle high touched target; paper only"
+                px = target
             elif signal == "SELL":
                 exit_reason = "SMA5/SMA20 bearish crossover; paper only"
             if exit_reason:
@@ -157,7 +166,7 @@ def main():
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
         "strategy": "5-minute closed candles; SMA5/SMA20 entry; take profit +0.5% or stop loss -0.5% gross; bearish crossover exit; assumed 0.10% fee per side; max 10% initial balance per entry; max four positions",
-        "note": "Paper simulation only. TP/SL checked every 5-minute run on closed candles, so levels may be crossed between checks. +0.5% is before fees; no real orders or profit guarantee."
+        "note": "Paper simulation only. TP/SL checks candle high/low from each newly closed 5-minute candle. If both levels were touched in one candle, stop-loss is assumed first. Real fills can differ; +0.5% is before fees; no real orders or profit guarantee."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
