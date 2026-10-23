@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T07:03:16.624292+00:00",
+  "last_run": "2026-10-23T12:36:30.770571+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 15-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -9,48 +9,64 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81774.4296875,
-    "ETHUSDT": 2406.6298828125,
-    "SOLUSDT": 104.58999633789062,
-    "DOGEUSDT": 0.07999999821186066
+    "BTCUSDT": 81592.578125,
+    "ETHUSDT": 2397.699951171875,
+    "SOLUSDT": 104.43000030517578,
+    "DOGEUSDT": 0.08013000339269638
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81774.4296875,
-      "bar_time": 1792737900000,
+      "price": 81592.578125,
+      "bar_time": 1792757700000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "ETHUSDT",
-      "price": 2406.6298828125,
-      "bar_time": 1792737900000,
+      "price": 2397.699951171875,
+      "bar_time": 1792757700000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "SOLUSDT",
-      "price": 104.58999633789062,
-      "bar_time": 1792737900000,
-      "signal": "HOLD",
+      "price": 104.43000030517578,
+      "bar_time": 1792757700000,
+      "signal": "BUY",
       "source": "Yahoo Finance chart (USD)"
     },
     {
       "symbol": "DOGEUSDT",
-      "price": 0.07999999821186066,
-      "bar_time": 1792737900000,
+      "price": 0.08013000339269638,
+      "bar_time": 1792757700000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
-  "cash": 20000.0,
-  "market_value": 0,
-  "equity": 20000.0,
-  "return_pct": 0.0,
-  "open_positions": {},
-  "recent_trades": [],
+  "cash": 18000.0,
+  "market_value": 1998.001998,
+  "equity": 19998.001998,
+  "return_pct": -0.01,
+  "open_positions": {
+    "SOLUSDT": {
+      "qty": 19.13245228538961,
+      "avg": 104.43000030517578,
+      "entry_fee": 1.998001998001998,
+      "entry_time": "2026-10-23T12:36:30.770571+00:00"
+    }
+  },
+  "recent_trades": [
+    {
+      "time": "2026-10-23T12:36:30.770571+00:00",
+      "symbol": "SOLUSDT",
+      "side": "BUY",
+      "qty": 19.13245228538961,
+      "price": 104.43000030517578,
+      "reason": "SMA5/SMA20 bullish crossover; paper only"
+    }
+  ],
   "strategy": "SMA5/SMA20 crossover; assumed 0.10% fee per side; max 10% of initial balance per entry; max four positions",
   "note": "Educational paper-trading simulation only. No real orders; prices and execution may differ; no profit guarantee."
 }
