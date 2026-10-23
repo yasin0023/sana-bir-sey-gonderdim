@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-10-23T18:47:30.678134+00:00",
+  "last_run": "2026-10-23T18:49:33.477482+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
@@ -109,6 +109,9 @@
       "reason": "Stop-loss -0.1% gross; candle low touched stop; paper only"
     }
   ],
-  "strategy": "5-minute closed candles; SMA5/SMA20 entry; profit-only exits after fees; target approx +0.3% gross to aim for approx +0.1% net; bearish crossover only exits if net profit >= 0.01 USDT; no stop-loss; max 10% initial balance per entry; max four positions",
-  "note": "Paper simulation only; no real orders. Bot exits only when estimated realized PnL after entry and exit fees is at least 0.01 USDT. The target is about +0.3% gross to aim for about +0.1% net, but fees, quote differences, candle granularity and simulated fills can change results. No stop-loss means losing positions may remain open for a long time or never recover; zero-loss/profit is not guaranteed."
+  "strategy": "5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least 1.00 TRY (quote threshold 0.020105); USD/TRY source: Frankfurter reference rate; no stop-loss; max 10% initial balance per entry; max four positions",
+  "usdtry": 49.738,
+  "fx_source": "Frankfurter reference rate",
+  "min_net_profit_try": 1.0,
+  "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; no stop-loss means losing positions may remain open indefinitely. Zero-loss/profit and continuous trades are not guaranteed."
 }
