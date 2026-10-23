@@ -1,7 +1,7 @@
 {
-  "last_run": "2026-10-23T12:36:30.770571+00:00",
+  "last_run": "2026-10-23T13:21:23.896030+00:00",
   "mode": "paper_only",
-  "source": "Yahoo Finance 15-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
+  "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
   "sources": {
     "BTCUSDT": "Yahoo Finance chart (USD)",
     "ETHUSDT": "Yahoo Finance chart (USD)",
@@ -9,52 +9,64 @@
     "DOGEUSDT": "Yahoo Finance chart (USD)"
   },
   "prices": {
-    "BTCUSDT": 81592.578125,
-    "ETHUSDT": 2397.699951171875,
-    "SOLUSDT": 104.43000030517578,
-    "DOGEUSDT": 0.08013000339269638
+    "BTCUSDT": 81596.5625,
+    "ETHUSDT": 2397.590087890625,
+    "SOLUSDT": 104.33999633789062,
+    "DOGEUSDT": 0.07993999868631363
   },
   "symbols": [
     {
       "symbol": "BTCUSDT",
-      "price": 81592.578125,
-      "bar_time": 1792757700000,
-      "signal": "HOLD",
-      "source": "Yahoo Finance chart (USD)"
-    },
-    {
-      "symbol": "ETHUSDT",
-      "price": 2397.699951171875,
-      "bar_time": 1792757700000,
-      "signal": "HOLD",
-      "source": "Yahoo Finance chart (USD)"
-    },
-    {
-      "symbol": "SOLUSDT",
-      "price": 104.43000030517578,
-      "bar_time": 1792757700000,
+      "price": 81596.5625,
+      "bar_time": 1792761300000,
       "signal": "BUY",
       "source": "Yahoo Finance chart (USD)"
     },
     {
+      "symbol": "ETHUSDT",
+      "price": 2397.590087890625,
+      "bar_time": 1792761300000,
+      "signal": "BUY",
+      "source": "Yahoo Finance chart (USD)"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "price": 104.33999633789062,
+      "bar_time": 1792761300000,
+      "signal": "HOLD",
+      "source": "Yahoo Finance chart (USD)"
+    },
+    {
       "symbol": "DOGEUSDT",
-      "price": 0.08013000339269638,
-      "bar_time": 1792757700000,
+      "price": 0.07993999868631363,
+      "bar_time": 1792761300000,
       "signal": "HOLD",
       "source": "Yahoo Finance chart (USD)"
     }
   ],
   "errors": [],
-  "cash": 18000.0,
-  "market_value": 1998.001998,
-  "equity": 19998.001998,
-  "return_pct": -0.01,
+  "cash": 14000.0,
+  "market_value": 5992.2839974,
+  "equity": 19992.2839974,
+  "return_pct": -0.0386,
   "open_positions": {
     "SOLUSDT": {
       "qty": 19.13245228538961,
       "avg": 104.43000030517578,
       "entry_fee": 1.998001998001998,
       "entry_time": "2026-10-23T12:36:30.770571+00:00"
+    },
+    "BTCUSDT": {
+      "qty": 0.02448635012047227,
+      "avg": 81596.5625,
+      "entry_fee": 1.9980019980019983,
+      "entry_time": "2026-10-23T13:21:23.896030+00:00"
+    },
+    "ETHUSDT": {
+      "qty": 0.833337611834982,
+      "avg": 2397.590087890625,
+      "entry_fee": 1.998001998001998,
+      "entry_time": "2026-10-23T13:21:23.896030+00:00"
     }
   },
   "recent_trades": [
@@ -64,6 +76,22 @@
       "side": "BUY",
       "qty": 19.13245228538961,
       "price": 104.43000030517578,
+      "reason": "SMA5/SMA20 bullish crossover; paper only"
+    },
+    {
+      "time": "2026-10-23T13:21:23.896030+00:00",
+      "symbol": "BTCUSDT",
+      "side": "BUY",
+      "qty": 0.02448635012047227,
+      "price": 81596.5625,
+      "reason": "SMA5/SMA20 bullish crossover; paper only"
+    },
+    {
+      "time": "2026-10-23T13:21:23.896030+00:00",
+      "symbol": "ETHUSDT",
+      "side": "BUY",
+      "qty": 0.833337611834982,
+      "price": 2397.590087890625,
       "reason": "SMA5/SMA20 bullish crossover; paper only"
     }
   ],
