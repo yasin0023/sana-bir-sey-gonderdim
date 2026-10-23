@@ -105,7 +105,7 @@ def main():
     min_net_profit_quote = MIN_NET_PROFIT_TRY / usdtry
     now = datetime.now(timezone.utc)
     now_ms = int(now.timestamp() * 1000)
-    prices, updates, errors, sources = {}, [], [], {}
+    prices, updates, errors, sources, chart_candles = {}, [], [], {}, {}
     for symbol in SYMBOLS:
         try:
             candles, source = get_candles(symbol, now_ms)
@@ -118,6 +118,7 @@ def main():
             signal = "BUY" if fast_prev <= slow_prev and fast_now > slow_now else ("SELL" if fast_prev >= slow_prev and fast_now < slow_now else "HOLD")
             prices[symbol] = px
             sources[symbol] = source
+            chart_candles[symbol] = [{"time": int(c[0] / 1000), "open": c[1], "high": c[2], "low": c[3], "close": c[1], "volume": 0} for c in candles[-100:]]
             updates.append({"symbol": symbol, "price": px, "high": bar_high, "low": bar_low, "bar_time": bar_time, "signal": signal, "source": source})
         except Exception as exc:
             errors.append(f"{symbol}: {type(exc).__name__}: {exc}")
@@ -177,7 +178,7 @@ def main():
     report = {
         "last_run": now.isoformat(), "mode": "paper_only",
         "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
-        "sources": sources, "prices": prices, "symbols": updates, "errors": errors,
+        "sources": sources, "prices": prices, "symbols": updates, "chart_candles": chart_candles, "errors": errors,
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
