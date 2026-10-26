@@ -1,54 +1,54 @@
 {
-  "updated_at": "2026-10-23T17:29:36.959887+00:00",
+  "updated_at": "2026-10-26T14:04:31.306954+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 257.5,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 256.5,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 338.25,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 334.25,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "TUPRS",
-      "price": 360.75,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 362.0,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
-      "price": 372.25,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 369.75,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 63.75,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 64.1,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 126.5,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 126.3,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 65.1,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 66.6,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 33.92,
-      "bar_time": "2026-10-23T17:30:00+03:00",
+      "price": 33.94,
+      "bar_time": "2026-10-26T16:30:00+03:00",
       "signal": "HOLD"
     }
   ],
