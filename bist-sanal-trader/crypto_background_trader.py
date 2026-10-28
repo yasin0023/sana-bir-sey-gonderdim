@@ -94,6 +94,12 @@ def get_binance_candles(symbol):
 
 def get_candles(symbol, now_ms):
     errors = []
+    # Try Binance first: it supports the broadest set of USDT pairs in this watchlist.
+    try:
+        candles, source = get_binance_candles(symbol)
+        return candles, source
+    except Exception as exc:
+        errors.append(f"Binance: {type(exc).__name__}: {exc}")
     ticker = SYMBOLS[symbol]
     try:
         candles, source = get_yahoo_candles(ticker, now_ms)
@@ -105,11 +111,6 @@ def get_candles(symbol, now_ms):
         return candles, source
     except Exception as exc:
         errors.append(f"Kraken: {type(exc).__name__}: {exc}")
-    try:
-        candles, source = get_binance_candles(symbol)
-        return candles, source
-    except Exception as exc:
-        errors.append(f"Binance: {type(exc).__name__}: {exc}")
     raise RuntimeError(" | ".join(errors))
 
 def get_usdtry():
