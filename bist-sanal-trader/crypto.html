@@ -13,7 +13,7 @@
 </div>
 <div class="card" style="margin-top:14px"><h2>Canlı mum grafiği</h2>
 <div class="row"><label for="chartSymbol">Varlık</label><select id="chartSymbol"><option value="BTC-USD">BTC</option><option value="ETH-USD">ETH</option><option value="SOL-USD">SOL</option><option value="DOGE-USD">DOGE</option></select><label for="chartInterval">Zaman aralığı</label><select id="chartInterval"><option value="1m">1 dakika</option><option value="5m" selected>5 dakika</option><option value="15m">15 dakika</option><option value="30m">30 dakika</option><option value="60m">1 saat</option></select><button id="chartLoad" class="secondary">Grafiği yenile</button></div>
-<div id="chartMeta" class="hint">Mum grafiği yükleniyor…</div><div id="chartLegend" class="hint">MA(7) · MA(25) · MA(99) · Hacim</div>
+<div id="chartMeta" class="hint">Mum grafiği yükleniyor…</div><div id="chartLegend" class="hint">MA(7) · MA(25) · MA(99) · Hacim</div><div class="hint" style="margin:8px 0">▲ ALIŞ · ▼ SATIŞ · Net sonuç satış işleminde komisyonlar sonrası USDT olarak gösterilir.</div><div id="chartTrades" class="hint" style="margin:8px 0 12px">İşlem işaretleri rapordan yükleniyor…</div>
 <div id="candleChart" style="width:100%;min-height:280px;overflow:hidden"><div class="hint">Grafik yükleniyor…</div></div><div id="chartStatus" class="hint">Veri kaynağı: Kraken public API</div></div>
 <div class="card"><h2>Otomatik sanal portföy</h2><div class="grid">
 <div><div class="label">Sanal nakit</div><div id="cash" class="value">—</div></div>
@@ -138,10 +138,27 @@ async function loadCandleChart(){
   for(let k=0;k<5;k++){const val=min+(max-min)*k/4,yy=y(val);svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(W-right)+'" y2="'+yy+'" stroke="'+chartColors.grid+'"/><text x="'+(left-7)+'" y="'+(yy+4)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="end">'+val.toLocaleString('en-US',{maximumFractionDigits:3})+'</text>';}
   data.forEach((d,i)=>{const x=left+i*step+step/2,col=d.close>=d.open?chartColors.up:chartColors.down;svg+='<line x1="'+x+'" y1="'+y(d.high)+'" x2="'+x+'" y2="'+y(d.low)+'" stroke="'+col+'"/><rect x="'+(x-body/2)+'" y="'+Math.min(y(d.open),y(d.close))+'" width="'+body+'" height="'+Math.max(1,Math.abs(y(d.open)-y(d.close)))+'" fill="'+col+'"/><rect x="'+(x-body/2)+'" y="'+vy(d.volume||0)+'" width="'+body+'" height="'+(top+plotH+8+volH-vy(d.volume||0))+'" fill="'+col+'" opacity=".8"/>';});
   svg+=pathFor(ma7,chartColors.ma7)+pathFor(ma25,chartColors.ma25)+pathFor(ma99,chartColors.ma99);
+  // Mark the bot's recorded paper trades on the closest candle in the selected interval.
+  const symbolTrades=(report.recent_trades||[]).filter(t=>t.symbol===sym&&Number.isFinite(Number(t.price)));
+  let plotted=0;
+  symbolTrades.forEach(t=>{
+   const tradeSec=Math.floor(new Date(t.time).getTime()/1000);
+   let idx=-1,best=Infinity;
+   data.forEach((d,i)=>{const delta=Math.abs(d.time-tradeSec);if(delta<best){best=delta;idx=i;}});
+   if(idx<0||best>seconds*1.5)return;
+   const x=left+idx*step+step/2,yy=y(Number(t.price)),buy=t.side==='BUY',color=buy?chartColors.up:chartColors.down;
+   const label=buy?'A':'S';
+   if(buy) svg+='<path d="M '+x+' '+(yy+13)+' l -7 12 l 14 0 Z" fill="'+color+'" stroke="#0b1020" stroke-width="1"/>';
+   else svg+='<path d="M '+x+' '+(yy-13)+' l -7 -12 l 14 0 Z" fill="'+color+'" stroke="#0b1020" stroke-width="1"/>';
+   svg+='<text x="'+x+'" y="'+(buy?yy+36:yy-27)+'" fill="'+color+'" font-size="12" font-weight="700" text-anchor="middle">'+label+'</text>';
+   plotted++;
+  });
   [0,Math.floor(data.length/2),data.length-1].forEach(i=>{svg+='<text x="'+(left+i*step+step/2)+'" y="'+(H-5)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="middle">'+new Date(data[i].time*1000).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})+'</text>';});
   svg+='</svg>';$('candleChart').innerHTML=svg;
   const last=data[data.length-1];$('chartMeta').textContent=sym+' · Son fiyat '+usd(last.close)+' · MA(7): '+(ma7.at(-1)?.toFixed(3)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(3)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(3)||'Henüz 99 mum yok');
-  $('chartStatus').textContent='Son rapor: '+(report.last_run?new Date(report.last_run).toLocaleString('tr-TR'):'zaman yok')+' · Mumlar botun veri kaynağından alınır; rapor güncel olmayabilir.';
+  const tradesHtml=symbolTrades.slice(-8).reverse().map(t=>'<div style="padding:7px 0;border-bottom:1px solid #273652"><b style="color:'+(t.side==='BUY'?chartColors.up:chartColors.down)+'">'+(t.side==='BUY'?'▲ ALIŞ':'▼ SATIŞ')+'</b> · '+new Date(t.time).toLocaleString('tr-TR')+' · '+fmt(t.price)+' · '+(Number.isFinite(Number(t.realized_pnl))?'Net sonuç: '+fmt(t.realized_pnl)+' USDT':'Komisyon sonrası sonuç satış raporunda görünür')+'</div>').join('');
+  $('chartTrades').innerHTML=tradesHtml||'<div class="hint">Bu varlık için raporda henüz işlem kaydı yok.</div>';
+  $('chartStatus').textContent='Grafikte '+plotted+' işlem işareti gösteriliyor · Son rapor: '+(report.last_run?new Date(report.last_run).toLocaleString('tr-TR'):'zaman yok')+' · İşaretler son rapordaki işlemlerdir.';
  }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik verisi şu anda alınamadı.</div>';$('chartStatus').textContent='Grafik: '+e.message;}
 }
 $('chartLoad').addEventListener('click',loadCandleChart);$('chartSymbol').addEventListener('change',loadCandleChart);$('chartInterval').addEventListener('change',loadCandleChart);loadCandleChart();setInterval(loadCandleChart,60000);
