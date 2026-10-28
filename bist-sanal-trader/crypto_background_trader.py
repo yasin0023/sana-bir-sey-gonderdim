@@ -295,6 +295,8 @@ def main():
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
+        "realized_pnl_total": round(sum(float(t.get("realized_pnl", 0)) for t in state["trades"] if t.get("side") == "SELL"), 8),
+        "realized_pnl_trade_count": sum(1 for t in state["trades"] if t.get("side") == "SELL"),
         "strategy": f"5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least {MIN_NET_PROFIT_TRY:.2f} TRY (quote threshold {min_net_profit_quote:.6f}); USD/TRY source: {fx_source}; no stop-loss; max 10% initial balance per entry; max four positions",
         "usdtry": usdtry, "fx_source": fx_source, "min_net_profit_try": MIN_NET_PROFIT_TRY,
         "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; no stop-loss means losing positions may remain open indefinitely. Zero-loss/profit and continuous trades are not guaranteed."
