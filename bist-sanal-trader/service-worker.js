@@ -1,4 +1,4 @@
-const CACHE_NAME = "kripto-trader-shell-v1";
+const CACHE_NAME = "kripto-trader-shell-v2";
 const SHELL = ["./crypto.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
