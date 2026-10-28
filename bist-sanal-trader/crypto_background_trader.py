@@ -6,7 +6,16 @@ import requests
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "crypto_portfolio.json"
 REPORT_PATH = ROOT / "crypto_report.json"
-SYMBOLS = {"BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "SOLUSDT": "SOL-USD", "DOGEUSDT": "DOGE-USD"}
+# Large-cap, liquid non-stablecoin assets (approximate market-cap order; reviewed periodically).
+SYMBOLS = {
+    "BTCUSDT": "BTC-USD", "ETHUSDT": "ETH-USD", "BNBUSDT": "BNB-USD",
+    "XRPUSDT": "XRP-USD", "SOLUSDT": "SOL-USD", "TRXUSDT": "TRX-USD",
+    "ZECUSDT": "ZEC-USD", "HYPEUSDT": "HYPE-USD", "DOGEUSDT": "DOGE-USD",
+    "XMRUSDT": "XMR-USD", "LINKUSDT": "LINK-USD", "ADAUSDT": "ADA-USD",
+    "NEARUSDT": "NEAR-USD", "XLMUSDT": "XLM-USD", "BCHUSDT": "BCH-USD",
+    "SUIUSDT": "SUI-USD", "LTCUSDT": "LTC-USD", "AVAXUSDT": "AVAX-USD",
+    "UNIUSDT": "UNI-USD", "PEPEUSDT": "PEPE-USD"
+}
 START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
@@ -71,6 +80,18 @@ def get_kraken_candles(symbol):
         raise ValueError(f"Kraken yeterli kapanmış mum döndürmedi: {len(candles)}")
     return candles, "Kraken OHLC (USDT)"
 
+def get_binance_candles(symbol):
+    response = SESSION.get("https://api.binance.com/api/v3/klines",
+                          params={"symbol": symbol, "interval": "5m", "limit": 100}, timeout=20)
+    response.raise_for_status()
+    rows = response.json()
+    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    candles = [(int(row[0]), float(row[4]), float(row[2]), float(row[3]))
+               for row in rows if row[4] is not None and int(row[6]) < now_ms]
+    if len(candles) < 22:
+        raise ValueError(f"Binance yeterli kapanmış mum döndürmedi: {len(candles)}")
+    return candles, "Binance klines (USDT)"
+
 def get_candles(symbol, now_ms):
     errors = []
     ticker = SYMBOLS[symbol]
@@ -84,6 +105,11 @@ def get_candles(symbol, now_ms):
         return candles, source
     except Exception as exc:
         errors.append(f"Kraken: {type(exc).__name__}: {exc}")
+    try:
+        candles, source = get_binance_candles(symbol)
+        return candles, source
+    except Exception as exc:
+        errors.append(f"Binance: {type(exc).__name__}: {exc}")
     raise RuntimeError(" | ".join(errors))
 
 def get_usdtry():
@@ -119,8 +145,18 @@ def analyze_market_news(now):
                     "hacked", "lawsuit", "ban", "banned", "bearish", "sell-off", "selloff",
                     "liquidation", "liquidations", "rejection", "exploit", "fraud", "decline",
                     "declines", "rate hike")
-        coin_terms = {"BTCUSDT": ("bitcoin", "btc"), "ETHUSDT": ("ethereum", "ether", "eth"),
-                      "SOLUSDT": ("solana", "sol"), "DOGEUSDT": ("dogecoin", "doge")}
+        coin_terms = {
+            "BTCUSDT": ("bitcoin", "btc"), "ETHUSDT": ("ethereum", "ether", "eth"),
+            "BNBUSDT": ("bnb", "binance coin"), "XRPUSDT": ("xrp", "ripple"),
+            "SOLUSDT": ("solana",), "TRXUSDT": ("tron", "trx"), "ZECUSDT": ("zcash", "zec"),
+            "HYPEUSDT": ("hyperliquid", "hype"), "DOGEUSDT": ("dogecoin", "doge"),
+            "XMRUSDT": ("monero", "xmr"), "LINKUSDT": ("chainlink", "link"),
+            "ADAUSDT": ("cardano", "ada"), "NEARUSDT": ("near protocol", "near"),
+            "XLMUSDT": ("stellar", "xlm"), "BCHUSDT": ("bitcoin cash", "bch"),
+            "SUIUSDT": ("sui",), "LTCUSDT": ("litecoin", "ltc"),
+            "AVAXUSDT": ("avalanche", "avax"), "UNIUSDT": ("uniswap", "uni"),
+            "PEPEUSDT": ("pepe",)
+        }
         items, weighted_score = [], 0.0
         for block in blocks:
             def field(name):
