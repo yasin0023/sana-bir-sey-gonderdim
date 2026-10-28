@@ -303,6 +303,10 @@ def main():
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
         "realized_pnl_total": round(sum(float(t.get("realized_pnl", 0)) for t in state["trades"] if t.get("side") == "SELL"), 8),
         "realized_pnl_trade_count": sum(1 for t in state["trades"] if t.get("side") == "SELL"),
+        "winning_sell_count": sum(1 for t in state["trades"] if t.get("side") == "SELL" and float(t.get("realized_pnl", 0)) > 0),
+        "losing_sell_count": sum(1 for t in state["trades"] if t.get("side") == "SELL" and float(t.get("realized_pnl", 0)) < 0),
+        "win_rate_pct": round(sum(1 for t in state["trades"] if t.get("side") == "SELL" and float(t.get("realized_pnl", 0)) > 0) / max(1, sum(1 for t in state["trades"] if t.get("side") == "SELL")) * 100, 2),
+        "stop_loss_count": sum(1 for t in state["trades"] if t.get("side") == "SELL" and str(t.get("reason", "")).startswith("Zarar kes:")),
         "strategy": f"5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least {MIN_NET_PROFIT_TRY:.2f} TRY (quote threshold {min_net_profit_quote:.6f}); USD/TRY source: {fx_source}; 1% stop-loss based on entry price; max 10% initial balance per entry; max four positions",
         "usdtry": usdtry, "fx_source": fx_source, "min_net_profit_try": MIN_NET_PROFIT_TRY,
         "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; a 1% stop-loss is checked on available candle lows; simulated fills can differ from real market prices. Zero-loss/profit and continuous trades are not guaranteed."
