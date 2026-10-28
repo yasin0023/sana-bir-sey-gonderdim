@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="112" fill="#101a2e"/>
+<path d="M86 344h72l48-92 53 47 70-130 37 57h60" fill="none" stroke="#48d597" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M329 169h37v37" fill="none" stroke="#48d597" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="110" cy="344" r="18" fill="#8bb6ff"/>
+<text x="256" y="430" font-family="Arial,sans-serif" font-size="46" font-weight="700" fill="#edf3ff" text-anchor="middle">PAPER TRADER</text>
+</svg>
