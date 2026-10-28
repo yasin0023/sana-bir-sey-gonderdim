@@ -206,7 +206,7 @@ def main():
     min_net_profit_quote = MIN_NET_PROFIT_TRY / usdtry
     now = datetime.now(timezone.utc)
     now_ms = int(now.timestamp() * 1000)
-    prices, updates, errors, sources, chart_candles = {}, [], [], {}, {}
+    prices, updates, unavailable_updates, errors, sources, chart_candles = {}, [], [], [], {}, {}
     for symbol in SYMBOLS:
         try:
             candles, source = get_candles(symbol, now_ms)
@@ -222,7 +222,17 @@ def main():
             chart_candles[symbol] = [{"time": int(c[0] / 1000), "open": c[1], "high": c[2], "low": c[3], "close": c[1], "volume": 0} for c in candles[-100:]]
             updates.append({"symbol": symbol, "price": px, "high": bar_high, "low": bar_low, "bar_time": bar_time, "signal": signal, "source": source})
         except Exception as exc:
-            errors.append(f"{symbol}: {type(exc).__name__}: {exc}")
+            message = f"{type(exc).__name__}: {exc}"
+            errors.append(f"{symbol}: {message}")
+            # Keep every watched coin visible in the report even when candle data fails.
+            # This is explicitly WAIT_DATA, not a fabricated BUY/SELL/HOLD signal.
+            unavailable_updates.append({
+                "symbol": symbol,
+                "price": state.get("last_prices", {}).get(symbol),
+                "signal": "WAIT_DATA",
+                "source": "Veri alınamadı",
+                "reason": message,
+            })
 
     for item in updates:
         symbol, px, bar_time, signal = item["symbol"], item["price"], item["bar_time"], item["signal"]
@@ -281,7 +291,7 @@ def main():
         "last_run": now.isoformat(), "mode": "paper_only",
         "news_analysis": news_analysis,
         "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
-        "sources": sources, "prices": prices, "symbols": updates, "chart_candles": chart_candles, "errors": errors,
+        "sources": sources, "prices": prices, "symbols": updates + unavailable_updates, "chart_candles": chart_candles, "errors": errors,
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
         "equity": equity, "return_pct": round((equity / START_CASH - 1) * 100, 4),
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
