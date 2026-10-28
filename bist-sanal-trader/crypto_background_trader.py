@@ -20,6 +20,7 @@ START_CASH = 20000.0
 FEE = 0.001
 MAX_POSITION_PCT = 0.10
 MIN_NET_PROFIT_TRY = 1.0  # Alış ve satış komisyonlarından sonra hedef net kâr (TL)
+STOP_LOSS_PCT = 0.01  # Alış fiyatına göre %1 zarar kes
 DEFAULT_USDTRY = 40.0  # Kur servisi çalışmazsa ihtiyatlı olmayan yaklaşık yedek; raporda belirtilir
 MAX_OPEN_POSITIONS = 4
 # DOGE support enabled; the next scheduled run will publish its price and signal.
@@ -248,8 +249,12 @@ def main():
             qty = float(pos["qty"])
             # Solve for the sell price that covers entry cost, both fees, and at least 1 TL net.
             target = (qty * entry + float(pos.get("entry_fee", 0)) + min_net_profit_quote) / (qty * (1 - FEE))
-            # No stop-loss: don't intentionally close at a net loss. This can leave losing positions open.
-            if bar_high >= target:
+            # Stop-loss is checked first so a candle touching both levels is handled conservatively.
+            stop_price = (qty * entry + float(pos.get("entry_fee", 0) - qty * entry * STOP_LOSS_PCT)) / (qty * (1 - FEE))
+            if bar_low <= stop_price:
+                px = stop_price
+                exit_reason = f"Zarar kes: alış fiyatına göre %{STOP_LOSS_PCT * 100:.1f} sınır; komisyonlar dahil yaklaşık"
+            elif bar_high >= target:
                 px = target
                 exit_reason = f"Net kâr hedefi en az {MIN_NET_PROFIT_TRY:.2f} TL; iki komisyon sonrası"
             elif signal == "SELL":
@@ -261,7 +266,8 @@ def main():
             if exit_reason:
                 fee = qty * px * FEE
                 realized = qty * px - fee - qty * entry - float(pos.get("entry_fee", 0))
-                if realized >= min_net_profit_quote:
+                is_stop_loss = exit_reason.startswith("Zarar kes:")
+                if realized >= min_net_profit_quote or is_stop_loss:
                     state["cash"] = round(float(state["cash"]) + qty * px - fee, 8)
                     state["trades"].append({"time": now.isoformat(), "symbol": symbol, "side": "SELL", "qty": qty, "price": px, "realized_pnl": round(realized, 8), "reason": exit_reason})
                     del state["positions"][symbol]
@@ -297,9 +303,9 @@ def main():
         "open_positions": state["positions"], "recent_trades": state["trades"][-25:],
         "realized_pnl_total": round(sum(float(t.get("realized_pnl", 0)) for t in state["trades"] if t.get("side") == "SELL"), 8),
         "realized_pnl_trade_count": sum(1 for t in state["trades"] if t.get("side") == "SELL"),
-        "strategy": f"5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least {MIN_NET_PROFIT_TRY:.2f} TRY (quote threshold {min_net_profit_quote:.6f}); USD/TRY source: {fx_source}; no stop-loss; max 10% initial balance per entry; max four positions",
+        "strategy": f"5-minute closed candles; SMA5/SMA20 entry; exit only when estimated net profit after entry and exit fees is at least {MIN_NET_PROFIT_TRY:.2f} TRY (quote threshold {min_net_profit_quote:.6f}); USD/TRY source: {fx_source}; 1% stop-loss based on entry price; max 10% initial balance per entry; max four positions",
         "usdtry": usdtry, "fx_source": fx_source, "min_net_profit_try": MIN_NET_PROFIT_TRY,
-        "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; no stop-loss means losing positions may remain open indefinitely. Zero-loss/profit and continuous trades are not guaranteed."
+        "note": "Paper simulation only; no real orders. Target is at least 1 TRY estimated net profit after entry and exit fees using the reported USD/TRY reference rate. FX and crypto quote sources can differ, fills are simulated, and 5-minute candles may miss intrabar order; a 1% stop-loss is checked on available candle lows; simulated fills can differ from real market prices. Zero-loss/profit and continuous trades are not guaranteed."
     }
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Crypto paper trader report updated at {now.isoformat()} | equity={equity:.4f} | trades={len(state['trades'])} | errors={len(errors)}")
