@@ -138,9 +138,8 @@ function movingAverage(data,n){return data.map((_,i)=>i+1<n?null:data.slice(i+1-
 async function loadCandleChart(){
  const ticker=$('chartSymbol').value, interval=$('chartInterval').value;
  const sym={'BTC-USD':'BTCUSDT','ETH-USD':'ETHUSDT','BNB-USD':'BNBUSDT','XRP-USD':'XRPUSDT','SOL-USD':'SOLUSDT','TRX-USD':'TRXUSDT','ZEC-USD':'ZECUSDT','HYPE-USD':'HYPEUSDT','DOGE-USD':'DOGEUSDT','XMR-USD':'XMRUSDT','LINK-USD':'LINKUSDT','ADA-USD':'ADAUSDT','NEAR-USD':'NEARUSDT','XLM-USD':'XLMUSDT','BCH-USD':'BCHUSDT','SUI-USD':'SUIUSDT','LTC-USD':'LTCUSDT','AVAX-USD':'AVAXUSDT','UNI-USD':'UNIUSDT','PEPE-USD':'PEPEUSDT'}[ticker];
- $('chartStatus').textContent='GitHub raporundaki mum verisi alınıyor…';
+ $('chartStatus').textContent='Grafik verisi yükleniyor…';
  try{
-  // Same-origin static JSON avoids mobile-browser CORS failures from external exchanges.
   const res=await fetch('./crypto_report.json?t='+Date.now(),{cache:'no-store'});
   if(!res.ok)throw Error('Rapor HTTP '+res.status);
   const report=await res.json();
@@ -152,44 +151,49 @@ async function loadCandleChart(){
     const bucket=Math.floor(candle.time/seconds)*seconds;
     let last=grouped[grouped.length-1];
     if(!last||last.time!==bucket)grouped.push({time:bucket,open:candle.open,high:candle.high,low:candle.low,close:candle.close,volume:candle.volume||0});
-    else {last.high=Math.max(last.high,candle.high);last.low=Math.min(last.low,candle.low);last.close=candle.close;last.volume+=(candle.volume||0);}
+    else{last.high=Math.max(last.high,candle.high);last.low=Math.min(last.low,candle.low);last.close=candle.close;last.volume+=(candle.volume||0);}
    }
    data=grouped;
   }
   data=data.slice(-100);
-  if(data.length<5)throw Error('Raporda henüz yeterli mum geçmişi yok; Actions çalışmasını bekleyin');
+  if(data.length<5)throw Error('Bu coin için yeterli mum verisi yok.');
   const ma7=movingAverage(data,7),ma25=movingAverage(data,25),ma99=movingAverage(data,99);
-  const W=900,H=300,top=12,left=54,right=10,plotH=195,volH=45,plotW=W-left-right;
-  const lo=Math.min(...data.map(x=>x.low)),hi=Math.max(...data.map(x=>x.high)),pad=(hi-lo)*.08||1,min=lo-pad,max=hi+pad;
-  const y=p=>top+(max-p)/(max-min)*plotH,step=plotW/data.length,body=Math.max(2,step*.58);
-  const maxVol=Math.max(1,...data.map(x=>x.volume||0)),vy=v=>top+plotH+8+(1-(v||0)/maxVol)*volH;
-  const pathFor=(arr,color)=>{let d='';arr.forEach((v,i)=>{if(v===null)return;d+=(d?' L':'M')+(left+i*step+step/2).toFixed(2)+' '+y(v).toFixed(2)});return d?'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="1.8"/>':''};
-  let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Mum grafiği" style="display:block;width:100%;height:auto;background:#0b1020;border-radius:10px">';
-  for(let k=0;k<5;k++){const val=min+(max-min)*k/4,yy=y(val);svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(W-right)+'" y2="'+yy+'" stroke="'+chartColors.grid+'"/><text x="'+(left-7)+'" y="'+(yy+4)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="end">'+val.toLocaleString('en-US',{maximumFractionDigits:3})+'</text>';}
-  data.forEach((d,i)=>{const x=left+i*step+step/2,col=d.close>=d.open?chartColors.up:chartColors.down;svg+='<line x1="'+x+'" y1="'+y(d.high)+'" x2="'+x+'" y2="'+y(d.low)+'" stroke="'+col+'"/><rect x="'+(x-body/2)+'" y="'+Math.min(y(d.open),y(d.close))+'" width="'+body+'" height="'+Math.max(1,Math.abs(y(d.open)-y(d.close)))+'" fill="'+col+'"/><rect x="'+(x-body/2)+'" y="'+vy(d.volume||0)+'" width="'+body+'" height="'+(top+plotH+8+volH-vy(d.volume||0))+'" fill="'+col+'" opacity=".8"/>';});
+  const W=960,H=420,left=76,right=18,top=24,plotH=270,volTop=320,volH=58,plotW=W-left-right;
+  const lo=Math.min(...data.map(x=>x.low)),hi=Math.max(...data.map(x=>x.high)),pad=(hi-lo)*.08||Math.abs(hi)*.002||1,min=lo-pad,max=hi+pad;
+  const y=p=>top+(max-p)/(max-min)*plotH,step=plotW/data.length,body=Math.max(2,step*.62);
+  const maxVol=Math.max(1,...data.map(x=>x.volume||0)),vy=v=>volTop+volH-(v||0)/maxVol*volH;
+  const pathFor=(arr,color)=>{let d='';arr.forEach((v,i)=>{if(v===null)return;d+=(d?' L':'M')+(left+i*step+step/2).toFixed(2)+' '+y(v).toFixed(2)});return d?'<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>':''};
+  let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Geliştirilmiş mum grafiği" style="display:block;width:100%;height:auto;background:#0b1020;border-radius:12px">';
+  for(let k=0;k<=5;k++){
+   const val=min+(max-min)*k/5,yy=y(val);
+   svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(W-right)+'" y2="'+yy+'" stroke="'+chartColors.grid+'" stroke-width="1"/><text x="'+(left-9)+'" y="'+(yy+4)+'" fill="'+chartColors.text+'" font-size="12" text-anchor="end">'+val.toLocaleString('en-US',{maximumFractionDigits:6})+'</text>';
+  }
+  data.forEach((d,i)=>{
+   const x=left+i*step+step/2,col=d.close>=d.open?chartColors.up:chartColors.down;
+   svg+='<line x1="'+x+'" y1="'+y(d.high)+'" x2="'+x+'" y2="'+y(d.low)+'" stroke="'+col+'" stroke-width="1.5"/><rect x="'+(x-body/2)+'" y="'+Math.min(y(d.open),y(d.close))+'" width="'+body+'" height="'+Math.max(1,Math.abs(y(d.open)-y(d.close)))+'" rx="1" fill="'+col+'"/>';
+   const vh=volTop+volH-vy(d.volume||0);svg+='<rect x="'+(x-body/2)+'" y="'+vy(d.volume||0)+'" width="'+body+'" height="'+Math.max(1,vh)+'" fill="'+col+'" opacity=".68"/>';
+  });
   svg+=pathFor(ma7,chartColors.ma7)+pathFor(ma25,chartColors.ma25)+pathFor(ma99,chartColors.ma99);
-  // Mark the bot's recorded paper trades on the closest candle in the selected interval.
   const symbolTrades=(report.recent_trades||[]).filter(t=>t.symbol===sym&&Number.isFinite(Number(t.price)));
   let plotted=0;
   symbolTrades.forEach(t=>{
-   const tradeSec=Math.floor(new Date(t.time).getTime()/1000);
-   let idx=-1,best=Infinity;
+   const tradeSec=Math.floor(new Date(t.time).getTime()/1000);let idx=-1,best=Infinity;
    data.forEach((d,i)=>{const delta=Math.abs(d.time-tradeSec);if(delta<best){best=delta;idx=i;}});
    if(idx<0||best>seconds*1.5)return;
    const x=left+idx*step+step/2,yy=y(Number(t.price)),buy=t.side==='BUY',color=buy?chartColors.up:chartColors.down;
-   const label=buy?'A':'S';
-   if(buy) svg+='<path d="M '+x+' '+(yy+13)+' l -7 12 l 14 0 Z" fill="'+color+'" stroke="#0b1020" stroke-width="1"/>';
-   else svg+='<path d="M '+x+' '+(yy-13)+' l -7 -12 l 14 0 Z" fill="'+color+'" stroke="#0b1020" stroke-width="1"/>';
-   svg+='<text x="'+x+'" y="'+(buy?yy+36:yy-27)+'" fill="'+color+'" font-size="12" font-weight="700" text-anchor="middle">'+label+'</text>';
+   svg+='<circle cx="'+x+'" cy="'+yy+'" r="5" fill="'+color+'" stroke="#fff" stroke-width="1.5"/><text x="'+x+'" y="'+(buy?yy+20:yy-10)+'" fill="'+color+'" font-size="13" font-weight="700" text-anchor="middle">'+(buy?'ALIŞ':'SATIŞ')+'</text>';
    plotted++;
   });
-  [0,Math.floor(data.length/2),data.length-1].forEach(i=>{svg+='<text x="'+(left+i*step+step/2)+'" y="'+(H-5)+'" fill="'+chartColors.text+'" font-size="11" text-anchor="middle">'+new Date(data[i].time*1000).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})+'</text>';});
-  svg+='</svg>';$('candleChart').innerHTML=svg;
-  const last=data[data.length-1];$('chartMeta').textContent=sym+' · Son fiyat '+usd(last.close)+' · MA(7): '+(ma7.at(-1)?.toFixed(3)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(3)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(3)||'Henüz 99 mum yok');
-  const tradesHtml=symbolTrades.slice(-8).reverse().map(t=>'<div style="padding:7px 0;border-bottom:1px solid #273652"><b style="color:'+(t.side==='BUY'?chartColors.up:chartColors.down)+'">'+(t.side==='BUY'?'▲ ALIŞ':'▼ SATIŞ')+'</b> · '+new Date(t.time).toLocaleString('tr-TR')+' · '+fmt(t.price)+' · '+(Number.isFinite(Number(t.realized_pnl))?'Net sonuç: '+fmt(t.realized_pnl)+' USDT':'Komisyon sonrası sonuç satış raporunda görünür')+'</div>').join('');
+  [0,Math.floor(data.length/2),data.length-1].forEach(i=>{svg+='<text x="'+(left+i*step+step/2)+'" y="405" fill="'+chartColors.text+'" font-size="12" text-anchor="middle">'+new Date(data[i].time*1000).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})+'</text>';});
+  svg+='<text x="'+left+'" y="14" fill="'+chartColors.text+'" font-size="12">Fiyat</text><text x="'+left+'" y="314" fill="'+chartColors.text+'" font-size="12">Hacim</text></svg>';
+  $('candleChart').innerHTML=svg;
+  const last=data[data.length-1],priceChange=data.length>1?(last.close/data[0].close-1)*100:0;
+  $('chartMeta').textContent=sym+' · Son fiyat '+usd(last.close)+' · Görünen aralık değişimi '+(priceChange>=0?'+':'')+priceChange.toFixed(2)+'% · MA(7): '+(ma7.at(-1)?.toFixed(4)||'—')+' · MA(25): '+(ma25.at(-1)?.toFixed(4)||'—')+' · MA(99): '+(ma99.at(-1)?.toFixed(4)||'Yeterli mum yok');
+  $('chartLegend').textContent='🟢 Yükseliş · 🔴 Düşüş · Sarı MA(7) · Pembe MA(25) · Mor MA(99) · Alt bölüm: hacim (kaynakta mevcutsa)';
+  const tradesHtml=symbolTrades.slice(-8).reverse().map(t=>'<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b style="color:'+(t.side==='BUY'?chartColors.up:chartColors.down)+'">'+(t.side==='BUY'?'▲ ALIŞ':'▼ SATIŞ')+'</b> · '+new Date(t.time).toLocaleString('tr-TR')+' · Fiyat: '+fmt(t.price)+' · '+(Number.isFinite(Number(t.realized_pnl))?'Net sonuç: '+fmt(t.realized_pnl)+' USDT':'Satış net sonucu raporda yok')+'</div>').join('');
   $('chartTrades').innerHTML=tradesHtml||'<div class="hint">Bu varlık için raporda henüz işlem kaydı yok.</div>';
-  $('chartStatus').textContent='Grafikte '+plotted+' işlem işareti gösteriliyor · Son rapor: '+(report.last_run?new Date(report.last_run).toLocaleString('tr-TR'):'zaman yok')+' · İşaretler son rapordaki işlemlerdir.';
- }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik verisi şu anda alınamadı.</div>';$('chartStatus').textContent='Grafik: '+e.message;}
+  $('chartStatus').textContent='Gösterilen mum: '+data.length+' · İşlem işareti: '+plotted+' · Rapor: '+(report.last_run?new Date(report.last_run).toLocaleString('tr-TR'):'zaman yok')+'. Grafik yaklaşık 60 saniyede yenilenir.';
+ }catch(e){$('candleChart').innerHTML='<div class="hint">Grafik şu anda çizilemedi.</div>';$('chartStatus').textContent='Grafik: '+e.message;}
 }
 $('chartLoad').addEventListener('click',loadCandleChart);$('chartSymbol').addEventListener('change',loadCandleChart);$('chartInterval').addEventListener('change',loadCandleChart);loadCandleChart();setInterval(loadCandleChart,60000);
 
