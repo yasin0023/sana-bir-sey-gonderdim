@@ -1,0 +1,21 @@
+{
+  "id": "./crypto.html",
+  "name": "Kripto Sanal Trader",
+  "short_name": "Kripto Trader",
+  "description": "Canlı kripto fiyatları ve sanal işlem paneli",
+  "lang": "tr-TR",
+  "start_url": "./crypto.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1020",
+  "theme_color": "#101a2e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
