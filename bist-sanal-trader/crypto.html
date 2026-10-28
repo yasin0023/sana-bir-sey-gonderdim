@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101a2e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Kripto Trader"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon.svg">
 <title>Kripto Sanal Trader</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1020;--panel:#121a2d;--line:#273652;--text:#edf3ff;--muted:#9cacc7;--green:#48d597;--red:#ff7777;--blue:#8bb6ff;--card-a:rgba(24,36,59,.97);--card-b:rgba(15,23,40,.98);--control:#0d1527;--thead:#17243b;--logo-bg:#1e355b;--warn-bg:#2b2416;--warn-line:#69562d}
@@ -198,4 +199,5 @@ async function loadCandleChart(){
 $('chartLoad').addEventListener('click',loadCandleChart);$('chartSymbol').addEventListener('change',loadCandleChart);$('chartInterval').addEventListener('change',loadCandleChart);loadCandleChart();setInterval(loadCandleChart,60000);
 
 $('refresh').addEventListener('click',()=>{prices();report()});prices();report();setInterval(prices,30000);setInterval(report,10000);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(err=>console.warn('Service worker kaydı yapılamadı:',err)));}
 </script></body></html>
