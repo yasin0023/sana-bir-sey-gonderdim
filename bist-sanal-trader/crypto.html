@@ -48,7 +48,7 @@ applyTheme(savedTheme==='light'?'light':'dark');
 if(themeButton)themeButton.addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
 const fmt=n=>Number.isFinite(Number(n))?Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6}):'—';
 const coinFmt=n=>{const v=Number(n);if(!Number.isFinite(v))return '—';const digits=v>=1000?2:v>=1?3:v>=0.01?4:8;return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:digits});};
-const usd=n=>Number.isFinite(Number(n))?'
+const usd=n=>Number.isFinite(Number(n))?'$'+fmt(n):'—';
 async function getTicker(symbol){
  const yahooTicker={'BTCUSDT':'BTC-USD','ETHUSDT':'ETH-USD','SOLUSDT':'SOL-USD','DOGEUSDT':'DOGE-USD'}[symbol];
  let lastError;
