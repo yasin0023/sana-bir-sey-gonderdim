@@ -95,6 +95,70 @@ def get_usdtry():
         raise ValueError("USD/TRY kuru geçersiz")
     return rate, "Frankfurter reference rate"
 
+def analyze_market_news(now):
+    """Fetch recent public crypto headlines and produce a transparent heuristic sentiment score."""
+    import re
+    import html
+    from email.utils import parsedate_to_datetime
+
+    url = "https://news.google.com/rss/search"
+    params = {"q": '(Bitcoin OR Ethereum OR Solana OR Dogecoin OR cryptocurrency) when:1d',
+              "hl": "en-US", "gl": "US", "ceid": "US:en"}
+    result = {"status": "unavailable", "score": 0, "label": "Veri yok",
+              "confidence": "low", "updated_at": now.isoformat(), "items": [],
+              "method": "Son 24 saatlik haber başlıklarında anahtar kelime tabanlı ön duygu analizi; yatırım tavsiyesi değildir."}
+    try:
+        response = SESSION.get(url, params=params, timeout=12)
+        response.raise_for_status()
+        xml = response.text
+        blocks = re.findall(r"<item>(.*?)</item>", xml, flags=re.S | re.I)
+        positive = ("surge", "rally", "soar", "gain", "gains", "rise", "rises", "inflow",
+                    "approval", "approved", "adoption", "bullish", "breakout", "record high",
+                    "upgrade", "rebound", "buying", "accumulate")
+        negative = ("crash", "plunge", "drop", "drops", "fall", "falls", "outflow", "hack",
+                    "hacked", "lawsuit", "ban", "banned", "bearish", "sell-off", "selloff",
+                    "liquidation", "liquidations", "rejection", "exploit", "fraud", "decline",
+                    "declines", "rate hike")
+        coin_terms = {"BTCUSDT": ("bitcoin", "btc"), "ETHUSDT": ("ethereum", "ether", "eth"),
+                      "SOLUSDT": ("solana", "sol"), "DOGEUSDT": ("dogecoin", "doge")}
+        items, weighted_score = [], 0.0
+        for block in blocks:
+            def field(name):
+                m = re.search(r"<" + name + r"(?:\s[^>]*)?>(.*?)</" + name + r">", block, re.S | re.I)
+                return html.unescape(re.sub(r"<[^>]+>", "", m.group(1))).strip() if m else ""
+            title, link, pub = field("title"), field("link"), field("pubDate")
+            if not title:
+                continue
+            try:
+                published = parsedate_to_datetime(pub)
+                if published.tzinfo is None:
+                    published = published.replace(tzinfo=timezone.utc)
+                age_hours = max(0.0, (now - published.astimezone(timezone.utc)).total_seconds() / 3600)
+            except Exception:
+                age_hours = 24.0
+            if age_hours > 24:
+                continue
+            low = title.lower()
+            pos = sum(1 for word in positive if word in low)
+            neg = sum(1 for word in negative if word in low)
+            raw = max(-2, min(2, pos - neg))
+            weight = max(0.15, 1 - age_hours / 30)
+            if raw:
+                weighted_score += raw * weight
+            assets = [sym for sym, terms in coin_terms.items() if any(re.search(r"\b" + re.escape(term) + r"\b", low) for term in terms)]
+            items.append({"title": title[:240], "link": link, "published_at": pub,
+                          "age_hours": round(age_hours, 1), "sentiment": "positive" if raw > 0 else ("negative" if raw < 0 else "neutral"),
+                          "assets": assets})
+        items = items[:12]
+        score = max(-100, min(100, round(weighted_score * 12)))
+        label = "Olumlu" if score >= 20 else ("Olumsuz" if score <= -20 else "Nötr / karışık")
+        result.update({"status": "ok", "score": score, "label": label,
+                       "confidence": "medium" if len(items) >= 6 and abs(score) >= 20 else "low",
+                       "items": items, "headline_count": len(items)})
+    except Exception as exc:
+        result["error"] = f"{type(exc).__name__}: {exc}"
+    return result
+
 def main():
     state = load_state()
     try:
@@ -175,8 +239,10 @@ def main():
     state["last_run"] = now.isoformat()
     state["last_prices"].update(prices)
     STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    news_analysis = analyze_market_news(now)
     report = {
         "last_run": now.isoformat(), "mode": "paper_only",
+        "news_analysis": news_analysis,
         "source": "Yahoo Finance 5-minute candles with Kraken OHLC fallback; USD/USDT quote may differ slightly",
         "sources": sources, "prices": prices, "symbols": updates, "chart_candles": chart_candles, "errors": errors,
         "cash": round(float(state["cash"]), 8), "market_value": round(market_value, 8),
