@@ -1,62 +1,62 @@
 {
-  "updated_at": "2026-11-04T21:27:45.037006+00:00",
+  "updated_at": "2026-11-05T15:18:35.517998+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 291.5,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 296.0,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 352.75,
-      "bar_time": "2026-11-04T17:30:00+03:00",
-      "signal": "BUY"
+      "price": 337.75,
+      "bar_time": "2026-11-05T17:30:00+03:00",
+      "signal": "HOLD"
     },
     {
       "symbol": "TUPRS",
-      "price": 341.0,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 332.75,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
-      "price": 372.25,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 369.5,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 66.7,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 67.1,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 137.8,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 141.8,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 68.8,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 68.05,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 35.7,
-      "bar_time": "2026-11-04T17:30:00+03:00",
+      "price": 35.42,
+      "bar_time": "2026-11-05T17:30:00+03:00",
       "signal": "HOLD"
     }
   ],
   "errors": [],
   "cash": 60599.9,
-  "market_value": 41481.05,
-  "equity": 102080.95,
-  "return_pct": 2.0809,
+  "market_value": 41063.23,
+  "equity": 101663.13,
+  "return_pct": 1.6631,
   "open_positions": {
     "THYAO": {
       "qty": 38,
