@@ -1,69 +1,63 @@
 {
-  "updated_at": "2026-11-05T21:32:30.290513+00:00",
+  "updated_at": "2026-11-06T14:54:42.276752+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 296.0,
-      "bar_time": "2026-11-05T17:30:00+03:00",
-      "signal": "HOLD"
+      "price": 297.25,
+      "bar_time": "2026-11-06T17:15:00+03:00",
+      "signal": "SELL"
     },
     {
       "symbol": "ASELS",
-      "price": 337.75,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 330.75,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "TUPRS",
-      "price": 332.75,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 339.0,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
       "price": 369.5,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 67.1,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 68.15,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 141.8,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 143.4,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 68.05,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 72.8,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 35.42,
-      "bar_time": "2026-11-05T17:30:00+03:00",
+      "price": 33.9,
+      "bar_time": "2026-11-06T17:15:00+03:00",
       "signal": "HOLD"
     }
   ],
   "errors": [],
-  "cash": 60599.9,
-  "market_value": 41063.23,
-  "equity": 101663.13,
-  "return_pct": 1.6631,
+  "cash": 71884.1,
+  "market_value": 29165.35,
+  "equity": 101049.45,
+  "return_pct": 1.0495,
   "open_positions": {
-    "THYAO": {
-      "qty": 38,
-      "avg": 258.5,
-      "entry_fee": 9.823,
-      "entry_time": "2026-10-26T17:30:00+03:00"
-    },
     "ASELS": {
       "qty": 29,
       "avg": 338.5,
@@ -123,6 +117,17 @@
       "price": 33.96,
       "fee": 9.98,
       "reason": "SMA5/SMA20 bullish crossover"
+    },
+    {
+      "time": "2026-11-06T14:54:42.276752+00:00",
+      "bar_time": "2026-11-06T17:15:00+03:00",
+      "symbol": "THYAO",
+      "side": "SELL",
+      "qty": 38,
+      "price": 297.25,
+      "fee": 11.3,
+      "realized_pnl": 1451.38,
+      "reason": "SMA5/SMA20 bearish crossover"
     }
   ],
   "strategy": "SMA5/SMA20 crossover; illustrative fee 0.10% per side; 10% of initial cash per entry; max 5 positions",
