@@ -1,62 +1,62 @@
 {
-  "updated_at": "2026-11-06T20:47:54.790773+00:00",
+  "updated_at": "2026-11-09T17:20:35.371814+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 299.25,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 308.75,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 331.5,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 337.5,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "TUPRS",
-      "price": 342.0,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 334.0,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
-      "price": 370.5,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 379.75,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 68.7,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 70.75,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 144.6,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 152.5,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 73.4,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 74.1,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 34.1,
-      "bar_time": "2026-11-06T17:30:00+03:00",
+      "price": 35.38,
+      "bar_time": "2026-11-09T17:30:00+03:00",
       "signal": "HOLD"
     }
   ],
   "errors": [],
   "cash": 71884.1,
-  "market_value": 29271.9,
-  "equity": 101156.0,
-  "return_pct": 1.156,
+  "market_value": 30062.72,
+  "equity": 101946.82,
+  "return_pct": 1.9468,
   "open_positions": {
     "ASELS": {
       "qty": 29,
