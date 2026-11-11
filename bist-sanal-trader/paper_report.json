@@ -1,62 +1,62 @@
 {
-  "updated_at": "2026-11-10T21:24:32.554014+00:00",
+  "updated_at": "2026-11-11T15:00:32.393789+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 313.5,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 316.5,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 336.5,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 343.75,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "TUPRS",
-      "price": 333.0,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 350.25,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
-      "price": 381.75,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 378.25,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 70.75,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 70.5,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
       "price": 154.5,
-      "bar_time": "2026-11-10T17:30:00+03:00",
-      "signal": "HOLD"
+      "bar_time": "2026-11-11T17:15:00+03:00",
+      "signal": "BUY"
     },
     {
       "symbol": "FROTO",
-      "price": 75.2,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 73.5,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 35.42,
-      "bar_time": "2026-11-10T17:30:00+03:00",
+      "price": 35.34,
+      "bar_time": "2026-11-11T17:15:00+03:00",
       "signal": "HOLD"
     }
   ],
   "errors": [],
-  "cash": 71884.1,
-  "market_value": 30097.48,
-  "equity": 101981.58,
-  "return_pct": 1.9816,
+  "cash": 61986.21,
+  "market_value": 40081.21,
+  "equity": 102067.42,
+  "return_pct": 2.0674,
   "open_positions": {
     "ASELS": {
       "qty": 29,
@@ -75,6 +75,12 @@
       "avg": 33.96,
       "entry_fee": 9.98424,
       "entry_time": "2026-10-28T12:15:00+03:00"
+    },
+    "GARAN": {
+      "qty": 64,
+      "avg": 154.5,
+      "entry_fee": 9.888,
+      "entry_time": "2026-11-11T17:15:00+03:00"
     }
   },
   "recent_trades": [
@@ -128,6 +134,16 @@
       "fee": 11.3,
       "realized_pnl": 1451.38,
       "reason": "SMA5/SMA20 bearish crossover"
+    },
+    {
+      "time": "2026-11-11T15:00:32.393789+00:00",
+      "bar_time": "2026-11-11T17:15:00+03:00",
+      "symbol": "GARAN",
+      "side": "BUY",
+      "qty": 64,
+      "price": 154.5,
+      "fee": 9.89,
+      "reason": "SMA5/SMA20 bullish crossover"
     }
   ],
   "strategy": "SMA5/SMA20 crossover; illustrative fee 0.10% per side; 10% of initial cash per entry; max 5 positions",
