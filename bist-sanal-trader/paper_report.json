@@ -1,69 +1,63 @@
 {
-  "updated_at": "2026-11-12T15:53:27.361450+00:00",
+  "updated_at": "2026-11-13T15:15:48.849128+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 319.75,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 321.5,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 345.25,
-      "bar_time": "2026-11-12T17:30:00+03:00",
-      "signal": "HOLD"
-    },
-    {
-      "symbol": "TUPRS",
-      "price": 354.5,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 346.0,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "SELL"
     },
     {
+      "symbol": "TUPRS",
+      "price": 361.0,
+      "bar_time": "2026-11-13T17:30:00+03:00",
+      "signal": "HOLD"
+    },
+    {
       "symbol": "BIMAS",
-      "price": 387.0,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 395.5,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 70.3,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 70.1,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 152.4,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 150.6,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 73.4,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 73.95,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "SISE",
-      "price": 36.04,
-      "bar_time": "2026-11-12T17:30:00+03:00",
+      "price": 35.98,
+      "bar_time": "2026-11-13T17:30:00+03:00",
       "signal": "SELL"
     }
   ],
   "errors": [],
-  "cash": 72571.37,
-  "market_value": 29827.85,
-  "equity": 102399.22,
-  "return_pct": 2.3992,
+  "cash": 82595.34,
+  "market_value": 19921.4,
+  "equity": 102516.74,
+  "return_pct": 2.5167,
   "open_positions": {
-    "ASELS": {
-      "qty": 29,
-      "avg": 338.5,
-      "entry_fee": 9.8165,
-      "entry_time": "2026-10-26T17:30:00+03:00"
-    },
     "BIMAS": {
       "qty": 26,
       "avg": 374.5,
@@ -148,6 +142,17 @@
       "price": 36.04,
       "fee": 10.6,
       "realized_pnl": 590.94,
+      "reason": "SMA5/SMA20 bearish crossover"
+    },
+    {
+      "time": "2026-11-13T15:15:48.849128+00:00",
+      "bar_time": "2026-11-13T17:30:00+03:00",
+      "symbol": "ASELS",
+      "side": "SELL",
+      "qty": 29,
+      "price": 346.0,
+      "fee": 10.03,
+      "realized_pnl": 197.65,
       "reason": "SMA5/SMA20 bearish crossover"
     }
   ],
