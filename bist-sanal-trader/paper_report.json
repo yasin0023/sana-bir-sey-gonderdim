@@ -1,62 +1,62 @@
 {
-  "updated_at": "2026-11-26T17:38:37.812830+00:00",
+  "updated_at": "2026-11-27T17:21:31.847420+00:00",
   "mode": "paper_only",
   "source": "Yahoo Finance via yfinance; BIST .IS; 15-minute bars, delayed/availability not guaranteed",
   "symbols": [
     {
       "symbol": "THYAO",
-      "price": 311.0,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 311.25,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "ASELS",
-      "price": 316.75,
-      "bar_time": "2026-11-26T17:30:00+03:00",
-      "signal": "HOLD"
+      "price": 331.5,
+      "bar_time": "2026-11-27T17:30:00+03:00",
+      "signal": "SELL"
     },
     {
       "symbol": "TUPRS",
-      "price": 324.5,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 331.75,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "BIMAS",
-      "price": 362.75,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 370.25,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "AKBNK",
-      "price": 60.8,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 59.55,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "GARAN",
-      "price": 140.1,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 137.8,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     },
     {
       "symbol": "FROTO",
-      "price": 65.95,
-      "bar_time": "2026-11-26T17:30:00+03:00",
-      "signal": "HOLD"
+      "price": 67.9,
+      "bar_time": "2026-11-27T17:30:00+03:00",
+      "signal": "SELL"
     },
     {
       "symbol": "SISE",
-      "price": 31.36,
-      "bar_time": "2026-11-26T17:30:00+03:00",
+      "price": 31.8,
+      "bar_time": "2026-11-27T17:30:00+03:00",
       "signal": "HOLD"
     }
   ],
   "errors": [],
   "cash": 72775.53,
-  "market_value": 27727.9,
-  "equity": 100503.43,
-  "return_pct": 0.5034,
+  "market_value": 27783.2,
+  "equity": 100558.73,
+  "return_pct": 0.5587,
   "open_positions": {
     "BIMAS": {
       "qty": 26,
